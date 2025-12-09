@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "./serasa/ultimasemanafeiraonovo/ofertas.html",
+      "permanent": false
+    }
+  ]
+}

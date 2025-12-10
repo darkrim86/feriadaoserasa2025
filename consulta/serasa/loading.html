@@ -1,20 +1,50 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
-    <script
+
+<!-- Config do pixel face + utm -->
+
+<script
       src="scripts/utms/latest-1.js"
       data-utmify-prevent-subids=""
       async=""
       defer=""
     ></script>
     <script>
-      window.pixelId = "67f846e3e19eff9c461bb215";
+      window.pixelId = "6939d79855be7738fa1fec49";
       var a = document.createElement("script");
       a.setAttribute("async", "");
       a.setAttribute("defer", "");
       a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
       document.head.appendChild(a);
-    </script>
+</script>
+
+<script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n; n.push=n; n.loaded=!0; n.version='2.0';
+      n.queue=[]; t=b.createElement(e); t.async=!0;
+      t.src=v; s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+
+      // Inicializa o pixel normalmente
+      fbq('init', '769736156134629');
+
+      // Dispara o PageView SOMENTE após o UTMify carregar
+      document.addEventListener("utmify-loaded", () => {
+        fbq("track", "PageView");
+      });
+</script>
+
+  <noscript>
+    <img height="1" width="1" style="display:none"
+         src="https://www.facebook.com/tr?id=769736156134629&ev=PageView&noscript=1"/>
+  </noscript>
+  
+<!-- Config do pixel face + utm -->
+
     <script type="text/javascript">
       // Verifica o dispositivo e redireciona antes de carregar outros recursos
       if (
@@ -30,7 +60,8 @@
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Preloader</title>
+    <title>Carregando...</title>
+    <link rel="icon" type="image/x-icon" href="../../1_6vufYTynT97AiH9uOytFpw.png">
     <style>
       /* Preloader - Tela de Carregamento */
       #preloader {

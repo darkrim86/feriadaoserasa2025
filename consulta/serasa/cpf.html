@@ -1,8 +1,53 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
+
+<!-- Config do pixel face + utm -->
+
+<script
+      src="scripts/utms/latest-1.js"
+      data-utmify-prevent-subids=""
+      async=""
+      defer=""
+    ></script>
+    <script>
+      window.pixelId = "6939d79855be7738fa1fec49";
+      var a = document.createElement("script");
+      a.setAttribute("async", "");
+      a.setAttribute("defer", "");
+      a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+      document.head.appendChild(a);
+</script>
+
+<script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n; n.push=n; n.loaded=!0; n.version='2.0';
+      n.queue=[]; t=b.createElement(e); t.async=!0;
+      t.src=v; s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+
+      // Inicializa o pixel normalmente
+      fbq('init', '769736156134629');
+
+      // Dispara o PageView SOMENTE após o UTMify carregar
+      document.addEventListener("utmify-loaded", () => {
+        fbq("track", "PageView");
+      });
+</script>
+
+  <noscript>
+    <img height="1" width="1" style="display:none"
+         src="https://www.facebook.com/tr?id=769736156134629&ev=PageView&noscript=1"/>
+  </noscript>
+  
+<!-- Config do pixel face + utm -->
+
     <meta charset="UTF-8" />
-    <title>99 &#8211; ofertafacilitada.com</title>
+    <title>Consulta fácil serasa</title>
+    <link rel="icon" type="image/x-icon" href="../../1_6vufYTynT97AiH9uOytFpw.png">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="max-image-preview:large" />
     <style>
@@ -10,7 +55,6 @@
         contain-intrinsic-size: 3000px 1500px;
       }
     </style>
-    <title>99 &#8211; ofertafacilitada.com</title>
     <link
       rel="alternate"
       type="application/rss+xml"

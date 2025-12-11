@@ -48,21 +48,20 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* MANTENHA TODO O CSS IGUAL */
+  /* TEMA ROSA - TUDO ROSA */
   :root {
     --primary: #e80070;
+    --primary-light: #ff4d9e;
     --primary-dark: #c60060;
-    --secondary: #4CAF50;
-    --danger: #ff4444;
-    --warning: #ff9800;
-    --success: #00c853;
-    --bot-bg: #f5f5f5;
+    --primary-extra-light: #ffe6f2;
+    --primary-light-bg: #fff0f7;
+    --bot-bg: #ffe6f2;
     --user-bg: #e80070;
-    --atendente-bg: #e3f2fd;
-    --system-bg: #fff8e1;
-    --text-dark: #333;
+    --atendente-bg: #ffe6f2;
+    --system-bg: #fff0f7;
+    --text-dark: #660033;
     --text-light: #fff;
-    --shadow: 0 2px 10px rgba(232, 0, 112, 0.1);
+    --shadow: 0 2px 10px rgba(232, 0, 112, 0.15);
     --radius: 12px;
     --radius-sm: 8px;
     --transition: all 0.3s ease;
@@ -76,7 +75,7 @@
 
   body {
     font-family: 'Inter', sans-serif;
-    background: #f5f7fa;
+    background: #fff0f7;
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -90,15 +89,16 @@
     height: 60vh;
     background: white;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(232, 0, 112, 0.15);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    position: relative; /* Adicionei esta linha */
+    position: relative;
+    border: 1px solid #ffe6f2;
   }
 
   .chat-header {
-    background: var(--primary);
+    background: linear-gradient(135deg, #e80070, #ff4d9e);
     color: white;
     padding: 18px 20px;
     display: flex;
@@ -107,7 +107,7 @@
     position: relative;
     z-index: 100;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    flex-shrink: 0; /* Adicionei esta linha */
+    flex-shrink: 0;
   }
 
   .header-left {
@@ -146,7 +146,7 @@
   .status-dot {
     width: 8px;
     height: 8px;
-    background: var(--secondary);
+    background: #fff;
     border-radius: 50%;
   }
 
@@ -162,11 +162,11 @@
     flex: 1;
     padding: 20px;
     overflow-y: auto;
-    background: #fafafa;
+    background: #fff0f7;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    min-height: 0; /* Adicionei esta linha */
+    min-height: 0;
   }
 
   .messages-container::-webkit-scrollbar {
@@ -174,7 +174,7 @@
   }
 
   .messages-container::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #ffe6f2;
     border-radius: 10px;
   }
 
@@ -210,13 +210,17 @@
     align-self: flex-start;
     border-bottom-left-radius: 4px;
     border-left: 3px solid var(--primary);
+    color: var(--text-dark);
+    box-shadow: var(--shadow);
   }
 
   .atendente-message {
     background: var(--atendente-bg);
     align-self: flex-start;
     border-bottom-left-radius: 4px;
-    border-left: 3px solid #2196F3;
+    border-left: 3px solid var(--primary);
+    color: var(--text-dark);
+    box-shadow: var(--shadow);
   }
 
   .user-message {
@@ -225,18 +229,20 @@
     align-self: flex-end;
     border-bottom-right-radius: 4px;
     border-right: 3px solid var(--primary-dark);
+    box-shadow: var(--shadow);
   }
 
   .system-message {
     background: var(--system-bg);
     align-self: center;
     font-size: 0.8rem;
-    color: #666;
+    color: var(--text-dark);
     max-width: 90%;
     padding: 8px 12px;
     border-radius: 20px;
-    border: 1px dashed var(--warning);
+    border: 1px solid var(--primary-light);
     text-align: center;
+    box-shadow: var(--shadow);
   }
 
   .message-header {
@@ -246,6 +252,7 @@
     margin-bottom: 6px;
     font-size: 0.8rem;
     font-weight: 600;
+    color: var(--primary-dark);
   }
 
   .message-avatar {
@@ -265,7 +272,8 @@
   }
 
   .atendente-avatar {
-    background: #2196F3;
+    background: var(--primary);
+    color: white;
   }
 
   .avatar-img {
@@ -279,21 +287,25 @@
     opacity: 0.6;
     margin-top: 5px;
     text-align: right;
+    color: var(--text-dark);
   }
 
   .message-media {
     margin-top: 10px;
     text-align: center;
   }
-
+  .media-audio::-webkit-media-controls-panel {
+  background: var(--primary-extra-light); /* Fundo rosa claro */
+  width: 100%;
+}
   .media-image {
     width: 80vw;
     height: 60vh;
     object-fit: contain;
     border-radius: var(--radius-sm);
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    background-color: #f8f9fa;
+    border: 2px solid var(--primary-light);
+    box-shadow: 0 2px 5px rgba(232, 0, 112, 0.1);
+    background-color: white;
     margin: 0 auto;
     display: block;
     max-width: 100%;
@@ -305,10 +317,11 @@
     object-fit: contain;
     border-radius: var(--radius-sm);
     margin-top: 10px;
-    background-color: #f8f9fa;
+    background-color: white;
     margin: 0 auto;
     display: block;
     max-width: 100%;
+    border: 2px solid var(--primary-light);
   }
 
   .logo-img {
@@ -318,6 +331,7 @@
     background-color: white;
     padding: 10px;
     border-radius: var(--radius-sm);
+    border: 2px solid var(--primary-light);
   }
 
   .message-media {
@@ -326,9 +340,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #f8f9fa;
+    background-color: white;
     border-radius: var(--radius-sm);
     padding: 5px;
+    border: 1px solid var(--primary-extra-light);
   }
 
   .logos-container {
@@ -340,44 +355,52 @@
     background-color: white;
     padding: 10px;
     border-radius: var(--radius-sm);
+    border: 1px solid var(--primary-extra-light);
   }
 
   .highlight-box {
-    background: #fff3e0;
+    background: #fff0f7;
     padding: 10px;
     border-radius: var(--radius-sm);
-    border-left: 3px solid var(--warning);
+    border-left: 3px solid var(--primary);
     margin: 8px 0;
     font-size: 0.85rem;
+    color: var(--text-dark);
+    border: 1px solid var(--primary-light);
   }
 
   .danger-box {
-    background: #ffebee;
+    background: #fff0f7;
     padding: 10px;
     border-radius: var(--radius-sm);
-    border-left: 3px solid var(--danger);
+    border-left: 3px solid var(--primary);
     margin: 8px 0;
     font-size: 0.85rem;
+    color: var(--text-dark);
+    border: 1px solid var(--primary-light);
   }
 
   .success-box {
-    background: #e8f5e9;
+    background: #fff0f7;
     padding: 10px;
     border-radius: var(--radius-sm);
-    border-left: 3px solid var(--success);
+    border-left: 3px solid var(--primary);
     margin: 8px 0;
     font-size: 0.85rem;
+    color: var(--text-dark);
+    border: 1px solid var(--primary-light);
   }
 
   .masked-data {
-    background: #f8f9fa;
+    background: white;
     padding: 8px 10px;
     border-radius: var(--radius-sm);
-    border: 1px solid #ddd;
+    border: 1px solid var(--primary-light);
     font-family: 'Courier New', monospace;
     margin: 6px 0;
     text-align: center;
     font-size: 0.85rem;
+    color: var(--text-dark);
   }
 
   .buttons-container {
@@ -411,11 +434,13 @@
     font-size: 0.9rem;
     text-align: center;
     display: block;
+    box-shadow: var(--shadow);
   }
 
   .action-btn:hover {
     background: var(--primary);
     color: white;
+    transform: translateY(-2px);
   }
 
   .action-btn:active {
@@ -433,13 +458,13 @@
   }
 
   .success-btn {
-    background: var(--success);
+    background: var(--primary);
     color: white;
     border: none;
   }
 
   .success-btn:hover {
-    background: #00b248;
+    background: var(--primary-dark);
   }
 
   .cpf-input-container {
@@ -449,7 +474,7 @@
   .cpf-input {
     width: 100%;
     padding: 12px;
-    border: 2px solid #e0e0e0;
+    border: 2px solid var(--primary-light);
     border-radius: var(--radius-sm);
     font-size: 1rem;
     font-family: 'Courier New', monospace;
@@ -457,17 +482,18 @@
     text-align: center;
     transition: var(--transition);
     background: white;
+    color: var(--text-dark);
   }
 
   .cpf-input:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(232, 0, 112, 0.1);
+    box-shadow: 0 0 0 2px rgba(232, 0, 112, 0.2);
   }
 
   .cpf-hint {
     font-size: 0.75rem;
-    color: #666;
+    color: var(--primary-dark);
     margin-top: 6px;
     text-align: center;
   }
@@ -475,20 +501,20 @@
   .chat-footer {
     padding: 12px 15px;
     background: white;
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid var(--primary-extra-light);
     font-size: 0.7rem;
-    color: #666;
+    color: var(--primary-dark);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-shrink: 0; /* Adicionei esta linha */
+    flex-shrink: 0;
   }
 
   .security-badge {
     display: flex;
     align-items: center;
     gap: 5px;
-    color: var(--success);
+    color: var(--primary);
   }
 
   .typing-indicator {
@@ -501,6 +527,8 @@
     width: fit-content;
     margin-bottom: 5px;
     border-left: 3px solid var(--primary);
+    color: var(--text-dark);
+    box-shadow: var(--shadow);
   }
 
   .typing-dots {
@@ -528,11 +556,12 @@
     display: none;
     width: 300px;
     height: 100px;
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background: linear-gradient(90deg, #ffe6f2 25%, #ffcce5 50%, #ffe6f2 75%);
     border-radius: var(--radius-sm);
     margin: 10px auto;
     animation: loading 1.5s infinite ease-in-out;
     background-size: 200% 100%;
+    border: 1px solid var(--primary-light);
   }
 
   @keyframes loading {
@@ -542,7 +571,7 @@
 
   .audio-timer {
     font-size: 0.7rem;
-    color: #666;
+    color: var(--primary-dark);
     margin-top: 5px;
     text-align: center;
     font-style: italic;
@@ -688,7 +717,7 @@ function showTypingIndicator(senderName = 'Bot') {
       <div class="typing-dot"></div>
       <div class="typing-dot"></div>
     </div>
-    <span style="font-size: 0.8rem; color: #666;">${senderName} está digitando...</span>
+    <span style="font-size: 0.8rem; color: var(--primary-dark);">${senderName} está digitando...</span>
   `;
   
   messagesContainer.appendChild(typingDiv);

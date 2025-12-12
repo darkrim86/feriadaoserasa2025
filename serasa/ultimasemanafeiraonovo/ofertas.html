@@ -16,30 +16,6 @@
       a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
       document.head.appendChild(a);
 </script>
-
-<script>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n; n.push=n; n.loaded=!0; n.version='2.0';
-      n.queue=[]; t=b.createElement(e); t.async=!0;
-      t.src=v; s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-
-      // Inicializa o pixel normalmente
-      fbq('init', '769736156134629');
-
-      // Dispara o PageView SOMENTE após o UTMify carregar
-      document.addEventListener("utmify-loaded", () => {
-        fbq("track", "PageView");
-      });
-</script>
-
-  <noscript>
-    <img height="1" width="1" style="display:none"
-         src="https://www.facebook.com/tr?id=769736156134629&ev=PageView&noscript=1"/>
-  </noscript>
   
 <!-- Config do pixel face + utm -->
 
@@ -134,7 +110,11 @@
  <div class="elementor-element elementor-element-413e79b3 elementor-mobile-align-justify elementor-widget elementor-widget-button" data-id=413e79b3 data-element_type=widget data-widget_type=button.default>
  <div class=elementor-widget-container>
  <div class=elementor-button-wrapper>
- <a class="elementor-button elementor-button-link elementor-size-sm" href="../../consulta/serasa/cpf.html?utm_source=organic&amp;utm_campaign=&amp;utm_medium=&amp;utm_content=&amp;utm_term=&amp;xcod=&amp;sck=" id=8a550cd8-d48d-8793-2565-4b4ae32fbcdc>
+ <a class="elementor-button elementor-button-link elementor-size-sm" href="#" id=8a550cd8-d48d-8793-2565-4b4ae32fbcdc>
+  <script>
+document.getElementById('8a550cd8-d48d-8793-2565-4b4ae32fbcdc').href = 
+    '../../consulta/serasa/cpf.html?' + new URLSearchParams(window.location.search).toString();
+</script>
  <span class=elementor-button-content-wrapper>
  <span class=elementor-button-text>Consultar CPF grátis</span>
  </span>
@@ -159,7 +139,29 @@
  <div class="elementor-element elementor-element-3909e94 elementor-mobile-align-justify elementor-widget elementor-widget-button" data-id=3909e94 data-element_type=widget data-widget_type=button.default>
  <div class=elementor-widget-container>
  <div class=elementor-button-wrapper>
- <a class="elementor-button elementor-button-link elementor-size-sm" href="../../consulta/serasa/cpf.html?utm_source=organic&amp;utm_campaign=&amp;utm_medium=&amp;utm_content=&amp;utm_term=&amp;xcod=&amp;sck=" id=524e8988-10b5-785c-b30a-1bdcc8964902>
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const link = document.getElementById('524e8988-10b5-785c-b30a-1bdcc8964902');
+    
+    // PEGA TODOS OS PARÂMETROS DA URL ATUAL, SEU ANENCÉFALO
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // MANTÉM TODOS OS PARÂMETROS QUE JÁ EXISTEM
+    // E ADICIONA O CAMINHO DA PRÓXIMA PÁGINA
+    const nextPage = '../../consulta/serasa/cpf.html';
+    const fullUrl = nextPage + '?' + urlParams.toString();
+    
+    // COLOCA A PORRA DO HREF CORRETO
+    link.href = fullUrl;
+    
+    console.log('URL gerada:', fullUrl); // PRA VOCÊ VER SE TÁ CERTO, IMBECIL
+});
+</script>
+ <a class="elementor-button elementor-button-link elementor-size-sm" href="#" id=524e8988-10b5-785c-b30a-1bdcc8964902>
+  <script>
+document.getElementById('524e8988-10b5-785c-b30a-1bdcc8964902').href = 
+    '../../consulta/serasa/cpf.html?' + new URLSearchParams(window.location.search).toString();
+</script>
  <span class=elementor-button-content-wrapper>
  <span class=elementor-button-text>Consultar Dívidas</span>
  </span>
@@ -435,7 +437,11 @@
  <div class="elementor-element elementor-element-61b8432 elementor-mobile-align-justify elementor-widget elementor-widget-button" data-id=61b8432 data-element_type=widget data-widget_type=button.default>
  <div class=elementor-widget-container>
  <div class=elementor-button-wrapper>
- <a class="elementor-button elementor-button-link elementor-size-sm" href="../../consulta/serasa/cpf.html?utm_source=organic&amp;utm_campaign=&amp;utm_medium=&amp;utm_content=&amp;utm_term=&amp;xcod=&amp;sck=" id=8a550cd8-d48d-8793-2565-4b4ae32fbcdc>
+ <a class="elementor-button elementor-button-link elementor-size-sm" href="#" id=8a550cd8-d48d-8793-2565-4b4ae32fbcdc>
+  <script>
+document.getElementById('8a550cd8-d48d-8793-2565-4b4ae32fbcdc').href = 
+    '../../consulta/serasa/cpf.html?' + new URLSearchParams(window.location.search).toString();
+</script>
  <span class=elementor-button-content-wrapper>
  <span id="botao2" class=elementor-button-text>Consultar CPF grátis</span>
  </span>

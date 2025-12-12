@@ -18,30 +18,6 @@
       a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
       document.head.appendChild(a);
 </script>
-
-<script>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n; n.push=n; n.loaded=!0; n.version='2.0';
-      n.queue=[]; t=b.createElement(e); t.async=!0;
-      t.src=v; s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-
-      // Inicializa o pixel normalmente
-      fbq('init', '769736156134629');
-
-      // Dispara o PageView SOMENTE após o UTMify carregar
-      document.addEventListener("utmify-loaded", () => {
-        fbq("track", "PageView");
-      });
-</script>
-
-  <noscript>
-    <img height="1" width="1" style="display:none"
-         src="https://www.facebook.com/tr?id=769736156134629&ev=PageView&noscript=1"/>
-  </noscript>
   
 <!-- Config do pixel face + utm -->
 
@@ -129,22 +105,21 @@
           let statusText = document.getElementById("status-text");
           let progressBar = document.getElementById("progress-bar-fill");
 
-          // 🔹 Função para capturar o CPF diretamente da URL
-          function getCPFfromURL() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get("cpf"); // Captura o CPF da URL
+          // 🔹 Função para capturar TODOS os parâmetros da URL
+          function getAllURLParams() {
+            return new URLSearchParams(window.location.search);
           }
 
-          // 🔹 Recupera o CPF da URL
-          const cpf = getCPFfromURL();
+          // 🔹 Recupera TODOS os parâmetros da URL (CPF, nome, UTMs, etc.)
+          const urlParams = getAllURLParams();
 
           // 🔹 Verifica se o CPF foi encontrado antes de continuar
-          if (!cpf) {
+          if (!urlParams.has("cpf")) {
             alert("Erro: CPF não encontrado na URL!");
             return;
           }
 
-          console.log("✅ CPF recebido na Página 2:", cpf);
+          console.log("✅ Parâmetros recebidos na Página Loading:", Object.fromEntries(urlParams.entries()));
 
           // Exibe primeiro status
           statusText.style.opacity = 1;
@@ -179,12 +154,11 @@
             preloader.style.opacity = 0;
             preloader.style.visibility = "hidden";
 
-            // 🔹 Redireciona para o Typebot com o CPF na URL
-            const urlFinal = `./atendimento.html?${new URLSearchParams(
-              window.location.search
-            )}`;
-            console.log("🔹 Redirecionando para:", urlFinal);
-            window.location.href = urlFinal;
+            // 🔹 IMPORTANTE: Redireciona mantendo TODOS os parâmetros da URL
+            // Isso inclui: cpf, nome, utm_source, utm_campaign, utm_medium, etc.
+            const nextPageUrl = "./atendimento.html?" + urlParams.toString();
+            console.log("🔹 Redirecionando com todos os parâmetros:", nextPageUrl);
+            window.location.href = nextPageUrl;
           }, 6000);
         }, 400);
       });

